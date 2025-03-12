@@ -1,0 +1,55 @@
+---
+title: "Inter-Regional Migration Analysis"
+author: "Kyaw Min Khaing"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra) 
+```
+
+1. Given Data
+The inter-regional migration flows are provided as follows:
+```{r}
+# Create a tibble for migration flows
+migration_flows <- tibble(
+  Origin = c("A", "B", "C", "D"),
+  To_A = c(NA, 737, 245, 331),
+  To_B = c(621, NA, 104, 540),
+  To_C = c(213, 256, NA, 897),
+  To_D = c(441, 153, 357, NA)
+)
+print(migration_flows)
+```
+
+## # Replace NA with 0 for calculations and compute Out-Migrants
+
+```{r}
+migration_flows[is.na(migration_flows)] <- 0
+migration_flows <- migration_flows %>%
+  mutate(Out_Migrants = rowSums(select(., -Origin)))
+print(migration_flows)
+```
+
+# Compute In-Migrants
+```{r}
+in_migrants <- colSums(select(migration_flows, -Origin, -Out_Migrants))
+in_migrants <- tibble(Country = names(in_migrants), In_Migrants = in_migrants)
+print(in_migrants)
+```
+# Compute Net Migration
+```{r}
+net_migration <- in_migrants %>%
+  left_join(migration_flows %>% select(Origin, Out_Migrants), by = c("Country" = "Origin")) %>%
+  mutate(Net_Migration = In_Migrants - Out_Migrants)
+print(net_migration)
+```
+# Display migration summary table
+```{r}
+net_migration %>%
+  kbl() %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+

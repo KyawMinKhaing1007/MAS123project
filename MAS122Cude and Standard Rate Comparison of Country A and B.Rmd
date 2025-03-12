@@ -1,0 +1,96 @@
+---
+title: "Mortality Rate Comparison of Country A and B"
+author: "Kyaw Min Khaing"
+date: "2025-02-04"
+output: html_document
+---
+
+## Mortality Rate Comparison
+The mortality conditions of **Country A** and **Country B** are calculated using:
+
+### **Crude Death Rate (CDR) for Country A**
+$$
+CDR(A) = \frac{\sum M_x(A) P_x(A)}{\sum P_x(A)} \times 1000
+$$
+
+### **Crude Death Rate (CDR) for Country B**
+$$
+CDR(B) = \frac{\sum M_x(B) P_x(B)}{\sum P_x(B)} \times 1000
+$$
+
+### **Standardized Death Rate (SDR) for Country A (using Country B's age structure)**
+$$
+SDR(A/B) = \frac{\sum M_x(A) P_x(B)}{\sum P_x(B)} \times 1000
+$$
+
+---
+
+```{r}
+library(tidyverse)
+```
+
+## **Data and Calculation in R**
+```{r}
+# Given Data
+mortality_data <- tibble(
+  Age_Group = c("0-4", "5-14", "15-24", "25-64", "65+"),
+  Px_A = c(660, 1200, 1000, 1975, 165),
+  Mx_A = c(0.025, 0.004, 0.005, 0.006, 0.050),
+  Px_B = c(595, 1275, 1340, 5350, 1440),
+  Mx_B = c(0.020, 0.004, 0.006, 0.006, 0.030),
+)
+print(mortality_data)
+```
+# Compute Required Values
+```{r}
+mortality_data <- mortality_data %>%
+  mutate(
+    MxA_PxA = Mx_A * Px_A,
+    MxB_PxB = Mx_B * Px_B,
+    MxA_PxB = Mx_A * Px_B,
+    MxB_PxA = Mx_B * Px_A
+  )
+print(mortality_data)
+```
+# Summarizing Values
+```{r}
+total_PxA <- sum(mortality_data$Px_A)
+total_PxB <- sum(mortality_data$Px_B)
+total_MxA_PxA <- sum(mortality_data$MxA_PxA)
+total_MxB_PxB <- sum(mortality_data$MxB_PxB)
+total_MxA_PxB <- sum(mortality_data$MxA_PxB)
+total_MxB_PxA <- sum(mortality_data$MxB_PxA)
+```
+# CDR & SDR Calculations
+```{r}
+CDR_A <- (total_MxA_PxA / total_PxA) * 1000
+CDR_B <- (total_MxB_PxB / total_PxB) * 1000
+SDR_A_B <- (total_MxA_PxB / total_PxB) * 1000
+SDR_B_A <- (total_MxB_PxA / total_PxA) * 1000
+```
+# Display Results in a tibble
+```{r}
+results <- tibble(
+  Metric = c("CDR(A)", "CDR(B)", "SDR(A/B)", "SDR(B/A)"),
+  Value = c(round(CDR_A, 2), round(CDR_B, 2), round(SDR_A_B, 2), round(SDR_B_A, 2))
+)
+
+mortality_data
+results
+```
+Visualization of Mortality Rates using ggplot
+```{r}
+# Plot Mortality Rates
+ggplot(results, aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  labs(
+    title = "Comparison of CDR(A), CDR(B), SDR(A/B), and SDR(B/A)",
+    x = "Metric",
+    y = "Value (per 1000 population)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = round(Value, 2)), vjust = -0.5)
+```
+
+

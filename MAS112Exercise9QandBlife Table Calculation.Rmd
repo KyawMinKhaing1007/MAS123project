@@ -1,0 +1,61 @@
+---
+title: "Untitled"
+author: "life Table"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+life_table <- tibble(
+  Age = c(30, 35, 40),
+  sqx = c(0.02039, 0.02596, 0.03758),
+  lx = c(85213, NA, NA),
+  sdx = c(NA, NA, NA),
+  slx = c(NA, NA, 398905),
+  Tx = c(NA, NA, 2723649),
+  ex = c(NA, NA, NA)
+)
+print(life_table)
+```
+
+# Calculate missing values
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+life_table <- life_table %>%
+  mutate(
+    sdx = c(lx[1] * sqx[1], NA, NA),
+    lx = c(lx[1], lx[1] - sdx[1], NA),
+    sdx = c(sdx[1], lx[2] * sqx[2], NA),
+    lx = c(lx[1], lx[2], lx[2] - sdx[2]),
+    sdx = c(sdx[1], sdx[2], lx[3] * sqx[3]),
+    slx = c(NA, NA, 398905),
+    Tx = c(NA, NA, 2723649),
+    ex = c(NA, NA, NA)
+  )
+print(life_table)
+```
+
+# Calculate nLx, Tx, and ex
+```{r}
+life_table <- life_table %>%
+  mutate(
+    nLx = c((5/2) * (lx[1] + lx[2]), (5/2) * (lx[2] + lx[3]), NA),
+    Tx = c(Tx[3] + nLx[2], Tx[3], Tx[3]),
+    Tx = c(Tx[1] + nLx[1], Tx[2], Tx[3]),
+    ex = Tx / lx
+  )
+print(life_table)
+```
+

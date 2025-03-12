@@ -1,0 +1,127 @@
+---
+title: "Sample Runs Test for Small Data Samples"
+author: "Kyaw Min Khaing"
+date: "2025-02-03"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+Step 1: State the Null and Research Hypotheses
+Null Hypothesis : The sequence of categories (M/F) is random.
+Alternative Hypothesis : The sequence of categories (M/F) is not random (suggesting clustering or patterns).
+Step 2: Set the Level of Significance
+The significance level (α) is set at 0.05 (5%).
+
+```{r cars}
+# Level of significance
+alpha <- 0.05
+```
+
+Step 3: Create the Dataset
+We define the sequence of Male (M) and Female (F) groupings and represent them as a vector.
+
+```{r pressure, echo=FALSE}
+# Define sequence dataset
+data <- tibble(
+  Position = 1:13,
+  Category = c("M", "FF", "M", "F", "M", "F", "M", "FF", "M", "FFF", "MM", "F", "MMM")
+)
+
+# Display dataset
+data
+
+```
+
+Step 4: Count the Total Runs in the Sequence
+A run is defined as a sequence of the same category (M or F) occurring consecutively.
+```{r}
+# Convert sequence into binary format for easy computation
+binary_seq <- data$Category %>% str_extract("^M|^F")
+
+# Count number of runs
+num_runs <- sum(binary_seq[-1] != binary_seq[-length(binary_seq)]) + 1
+
+# Display number of runs
+num_runs
+
+```
+Compute the Expected Number of Runs and Standard Deviation
+
+The expected number of runs (\(E(R)\)) and the standard deviation (\(\sigma_R\)) are given by:
+
+\[
+E(R) = \frac{2n_1 n_2}{n} + 1
+\]
+
+\[
+\sigma_R = \sqrt{\frac{2n_1 n_2(2n_1 n_2 - n)}{n^2(n-1)}}
+\]
+
+where:
+- \( n_1 \) = number of **M** (Male occurrences)
+- \( n_2 \) = number of **F** (Female occurrences)
+- \( n = n_1 + n_2 \)
+```{r}
+# Count Males (M) and Females (F)
+n1 <- sum(str_detect(data$Category, "M"))
+n2 <- sum(str_detect(data$Category, "F"))
+n <- n1 + n2
+
+# Compute expected runs and standard deviation
+E_R <- (2 * n1 * n2) / n + 1
+sigma_R <- sqrt((2 * n1 * n2 * (2 * n1 * n2 - n)) / (n^2 * (n - 1)))
+
+# Display expected runs and standard deviation
+E_R
+sigma_R
+
+
+```
+Step 6: Compute the Z-score
+```{r}
+# Compute Z-score
+Z_score <- (num_runs - E_R) / sigma_R
+
+# Display Z-score
+Z_score
+```
+Step 7: Determine the Critical Value
+Using a standard normal distribution table, the critical value for α = 0.05 (two-tailed test)
+
+```{r}
+# Compute critical value
+critical_value <- qnorm(1 - alpha/2)
+# Display critical value
+critical_value
+```
+Compare the Obtained Value with the Critical Value
+If |Z-score| > critical value, we reject the null hypothesis.
+
+
+```{r}
+# Decision based on comparison
+if (abs(Z_score) > critical_value) {
+  result <- "Reject the null hypothesis (the sequence is not random)."
+} else {
+  result <- "Fail to reject the null hypothesis (the sequence is random)."
+}
+
+# Display decision
+result
+
+```
+ Conclusion
+```{r}
+cat("Number of Runs (R):", num_runs, "\n")
+cat("Expected Runs (E(R)):", E_R, "\n")
+cat("Standard Deviation (σR):", sigma_R, "\n")
+cat("Computed Z-score:", Z_score, "\n")
+cat("Critical Value (two-tailed):", critical_value, "\n")
+cat("Conclusion:", result, "\n")
+```
+ 

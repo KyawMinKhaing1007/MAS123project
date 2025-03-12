@@ -1,0 +1,86 @@
+---
+title: "Sample_χ 2Goodness-of-Fit Test (Category Frequencies  Not Equal)"
+author: "Kyaw Min Khaing"
+date: "2025-02-02"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+Step 1: Set the Level of Significance
+The level of significance (α) is typically set at 0.05 (5%). This represents a 5% risk of rejecting the null hypothesis when it is actually true.
+
+```{r}
+alpha <- 0.05
+```
+
+Define the Observed and Expected Frequencies
+```{r}
+# Observed frequencies for the programs
+data <- tibble(
+  Program = c("Program 1", "Program 2", "Program 3"),
+  Observed = c(110, 55, 85),
+  Expected_Proportion = c(0.32, 0.22, 0.45)  # Hypothesized proportions
+)
+# Compute total observations
+total_observed <- sum(data$Observed)
+# Compute expected frequencies
+data <- data %>%
+  mutate(Expected = Expected_Proportion * total_observed)
+# Display dataset
+print(data)
+```
+
+Compute the Chi-Square Test Statistic
+```{r}
+# Compute chi-square test statistic
+chi_square_statistic <- data %>%
+  mutate(Chi_Square_Term = (Observed - Expected)^2 / Expected) %>%
+  summarise(Chi_Square = sum(Chi_Square_Term)) %>%
+  pull(Chi_Square)
+
+# Display the computed chi-square statistic
+glimpse(chi_square_statistic)
+```
+Step 4: Determine the Degrees of Freedom
+
+```{r}
+# Compute degrees of freedom
+df <- nrow(data) - 1
+
+# Display degrees of freedom
+df
+
+```
+Find the Critical Value
+```{r}
+# Compute the critical value
+critical_value <- qchisq(1 - alpha, df)
+
+# Display the critical value
+critical_value
+```
+Compare Test Statistic to Critical Value
+```{r}
+# Decision based on comparison
+if (chi_square_statistic > critical_value) {
+  result <- "Reject the null hypothesis"
+} else {
+  result <- "Fail to reject the null hypothesis"
+}
+
+# Display decision
+result
+
+```
+Conclusion
+```{r}
+# Display conclusion
+cat("The computed chi-square statistic is:", chi_square_statistic, "\n")
+cat("The critical value is:", critical_value, "\n")
+cat("Conclusion:", result, "\n")
+
+```
+

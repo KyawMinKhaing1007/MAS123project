@@ -1,0 +1,158 @@
+---
+title: "Sample_Point-Biserial_Correlation_(Large_Data _Samples)"
+author: "Kyaw Min Khaing"
+date: "2025-01-30"
+output:
+  word_document: default
+  html_document: default
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## R Markdown
+
+Step 1: State the Hypotheses
+
+Null Hypothesis (H₀): There is no significant correlation between gender and posttest scores.
+
+Alternative Hypothesis (H₁): There is a significant correlation between gender and posttest scores.
+
+Step 3: Load and Prepare Data
+
+```{r cars}
+data <- tibble(
+  Participant = 1:26,
+  Gender = c(rep("M", 14), rep("F", 12)),
+  Posttest_Score = c(6, 15, 8, 10, 6, 12, 7, 13, 13, 10, 18, 23, 17, 20, 14, 26, 14, 11, 29, 20, 15, 18, 9, 14, 21, 22)
+  ) %>% 
+  mutate(Gender_Binary = ifelse(Gender == "M", 0, 1)) 
+
+print(data)
+```
+
+## The formula for Point-Biserial Correlation is:
+
+$$
+ r_{pb} = \frac{M_1 - M_0}{s} \times \sqrt{p_0 \times p_1}
+$$
+
+where: - $M_1$ is the mean of the continuous variable for one group (e.g., females).
+- $M_0$ is the mean of the continuous variable for the other group (e.g., males).
+- $s$ is the standard deviation of the continuous variable.
+- $p_1$ is the proportion of one group.
+- $p_0$ is the proportion of the other group.
+#### means for female
+
+```{r pressure, echo=FALSE}
+M_1 <- mean(data %>% filter(Gender_Binary == 1) %>% pull(Posttest_Score))
+cat("means for female:", round(M_1, 4), "\n")
+```
+
+#### means for male
+
+```{r}
+M_0 <- mean(data %>% filter(Gender_Binary == 0) %>% pull(Posttest_Score))
+cat("means for male:", round(M_0, 4), "\n")
+```
+
+#### Compute standard deviation
+
+```{r}
+s <- sd(data$Posttest_Score)
+cat("standard deviation for the interval:", round(M_0, 4), "\n")
+```
+
+#### Total sample size
+
+```{r}
+n <- nrow(data)
+cat("total number of people:", round(n, 4), "\n")
+```
+
+## proportions for female
+
+```{r}
+p_1 <- sum(data$Gender_Binary == 1) / n
+cat("proportions for female", round(p_1 , 4), "\n")
+```
+
+## proportions for male
+
+```{r}
+p_0 <- sum(data$Gender_Binary == 0) / n
+cat("proportions for male", round(p_0 , 4), "\n")
+```
+
+## Step 4: Compute Point-Biserial Correlation
+
+```{r}
+r_pb <- (abs((M_0- M_1) / s) * sqrt(p_0 * p_1))
+cat("Point-Biserial Correlation (r_pb):", round(r_pb, 4), "\n")
+```
+
+\## Step 5: Determine the Critical Value
+
+Using an approximation to the normal distribution:
+
+$$
+ z^* = r_{pb} \times \sqrt{n - 1}
+$$
+
+```{r}
+Z_star<- (r_pb * sqrt(n - 1))
+cat("critical value (Z_star):", round(Z_star, 4), "\n")
+```
+
+From Table B.1 in Appendix B, for a two-tailed test with $\alpha = 0.05$, we must not reject $H_0$ if:
+
+$$
+-1.96 \leq z^* \leq 1.96
+$$ \## Step 6: Compare the Obtained Value with the Critical Value
+
+```{r}
+if ((Z_star) > 1.96) {
+  conclusion <- "The correlation is statistically significant. We reject H₀ and conclude there is a significant correlation."
+} else {
+  conclusion <- "The correlation is not statistically significant. We fail to reject H₀."
+}
+
+print(conclusion)
+```
+
+## Step 7: Interpret the Results
+
+Since $z^* = 2.055$ is greater than the critical value of 1.96, we reject the null hypothesis, suggesting that the correlation between gender and visual detail recognition is real.
+This suggests a **moderate but weak correlation** between gender and visual detail recognition.
+
+## Step 8: Reporting the Results
+
+> *A Point-Biserial correlation was conducted to determine the relationship between gender and visual detail recognition. The analysis yielded* $r_{pb} = `r round(r_pb, 4)`$.
+> The computed z-score was $z^* = `r round(z_star, 3)`$.
+> Since $z^*$ is `r ifelse(abs(z_star) > 1.96, "greater", "less")` than the critical value of 1.96, we `r ifelse(abs(z_star) > 1.96, "reject", "fail to reject")` the null hypothesis.
+> This suggests that there `r ifelse(abs(z_star) > 1.96, "is", "is no")` significant correlation between the two variables.
+
+A study comparing male and female ability to recognize and remember visual details involved **14 males (nM = 14)** and **12 females (nF = 12)**.
+The mean recognition score for **males was 12.71**, whereas the mean recognition score for **females was 17.75**.
+The correlation coefficient $r_{pb}$ was **0.411**, and the results were statistically significant **(p \< 0.05)**, indicating a **moderate relationship between gender and visual detail recognition**.
+
+## Step 9: Data Visualization
+
+```{r}
+data_long <- data %>%
+  pivot_longer(cols = Posttest_Score, names_to = "Variable", values_to = "Score")
+
+ggplot(data_long, aes(x = Gender, y = Score, fill = Gender)) +
+  geom_boxplot(outlier.color = "red", outlier.shape = 8) +
+  geom_jitter(width = 0.2, size = 2, alpha = 0.7) +
+  labs(
+    title = "Distribution of Visual Detail Recognition Scores by Gender",
+    x = "Gender",
+    y = "Posttest_Score"
+  ) +
+  theme_minimal()
+```

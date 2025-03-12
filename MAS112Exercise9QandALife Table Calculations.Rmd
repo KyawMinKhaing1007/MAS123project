@@ -1,0 +1,73 @@
+---
+title: "Life Table Calculations"
+author: "Kyaw Min Khaing"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+## Formulas Used
+
+The following formulas were used in the calculations:
+
+$$ l_{x+n} = l_x - d_x $$ $$ d_x = l_x \times q_x $$ $$ q_x = \frac{d_x}{l_x} $$ $$ p_x = 1 - q_x $$ $$ nL_x = \frac{n}{2} (l_x + l_{x+n}) $$
+
+```{r}
+# Creating a tibble table for given data
+life_table <- tibble(
+  Age = c(9, 10),
+  lx = c(50000, 49700),
+  dx = c(300, 200),
+  px = c(NA, NA),  # To be calculated
+  qx = c(NA, NA),  # To be calculated
+  Lx = c(NA, NA),  # To be calculated
+  Tx = c(1975400, NA), # One given, one to be calculated
+  ex = c(NA, NA)  # To be calculated
+)
+print(life_table)
+```
+
+# Computing qx
+
+```{r}
+life_table <- life_table %>%
+  mutate(qx = dx / lx)
+print(life_table)
+```
+
+# Computing px
+
+```{r}
+life_table <- life_table %>%
+  mutate(px = 1 - qx)
+print(life_table)
+```
+
+# Computing Lx
+
+```{r}
+life_table <- life_table %>%
+  mutate(Lx = (lx + lead(lx, default = last(lx))) / 2)
+print(life_table)
+```
+
+# Computing Tx
+
+```{r}
+life_table <- life_table %>%
+  mutate(Tx = ifelse(is.na(Tx), lag(Tx) - lag(Lx), Tx))
+print(life_table)
+```
+
+# Computing ex
+
+```{r}
+life_table <- life_table %>%
+  mutate(ex = Tx / lx)
+print(life_table)
+kable(life_table, digits = 4)
+```

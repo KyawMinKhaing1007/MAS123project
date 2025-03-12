@@ -1,0 +1,108 @@
+---
+title: "Sample Runs Test Referencing a Custom Value"
+author: "Kyaw Min Khaing"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Sample Runs Test (Large Data Samples)
+
+### 1. Hypothesis Statements
+- Null Hypothesis \(H_0\): The sequence is random.
+- Alternative Hypothesis \(H_A\): The sequence is not random.
+
+### 2. Define Data
+
+```{r}
+# Given data
+# Given data
+n1 <- 6   # Fails
+n2 <- 6   # Passes
+R <- 8    # Observed runs
+n <- n1 + n2
+
+# Create a tibble table for input values
+input_data <- tibble(
+  "Parameter" = c("Number of Category 1 (n1)", "Number of Category 2 (n2)", 
+                  "Total Sample Size (n)", "Observed Runs (R)"),
+  "Value" = c(n1, n2, n, R)
+)
+
+# Display input table
+kable(input_data, caption = "number of Fail and pass")
+```
+
+### 3. Compute Number of Runs \( R \)
+$$
+\bar{X}_R = \frac{2n_1n_2}{n_1 + n_2} + 1
+$$
+
+```{r}
+# Compute mean of runs
+X_R <- (2 * n1 * n2) / (n1 + n2) + 1
+# Create a tibble table for mean
+print(X_R)
+```
+
+### 4. Compute Mean and Standard Deviation
+
+$$
+s_R = \sqrt{\frac{2n_1n_2(2n_1n_2 - n_1 - n_2)}{(n_1 + n_2)^2 (n_1 + n_2 - 1)}}
+$$
+
+
+```{r}
+# Compute standard deviation of runs
+s_R <- sqrt((2 * n1 * n2 * (2 * n1 * n2 - n1 - n2)) / ((n1 + n2)^2 * (n1 + n2 - 1)))
+print(s_R)
+```
+
+
+### 5. Compute z-score
+$$
+Z = \frac{R+ h- \bar{x}_R}{s_R}
+$$
+
+
+```{r}
+h <- 0.5 
+Z <- (R + h - X_R) / s_R
+print(Z)
+```
+
+### 6. Decision-Making
+
+```{r}
+alpha <- 0.05
+critical_value <- qnorm(1 - alpha/2)
+decision <- ifelse(abs(Z) > critical_value, "Reject H0", "Fail to reject H0")
+# Create a tibble table for decision making
+decision_table <- tibble(
+  "Parameter" = c("Significance Level (α)", "Critical Value (±Z_α/2)", "Decision"),
+  "Value" = c(alpha, round(critical_value, 3), decision)
+)
+
+# Display decision table
+decision_table
+```
+
+### 7. Visualization
+
+```{r}
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+  stat_function(fun = dnorm, args = list(mean = 0, sd = 1), color = "blue") +
+  geom_vline(xintercept = Z, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = critical_value, color = "black", linetype = "dotted") +
+  geom_vline(xintercept = -critical_value, color = "black", linetype = "dotted") +
+  labs(title = "Z-Score in Standard Normal Distribution",
+       x = "Z-Score",
+       y = "Density") +
+  theme_minimal()
+```
+
+### 8. Interpretation
+Based on the computed z-score and critical values, we conclude whether the sequence is random or not.

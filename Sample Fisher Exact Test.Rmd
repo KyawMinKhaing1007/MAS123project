@@ -1,0 +1,99 @@
+---
+title: "Sample Fisher Exact Test"
+author: "Kyaw Min Khaing"
+date: "2025-02-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+Step 1: State the Null and Research Hypotheses
+Null Hypothesis: Gender and Attitude are independent (no association).
+Alternative Hypothesis: Gender and Attitude are not independent (there is an association).
+Step 2: Set the Level of Significance
+The significance level (α) is set at 0.05 (5%).
+
+```{r cars}
+# Level of significance
+alpha <- 0.05
+```
+
+## preparation
+
+```{r pressure, echo=FALSE}
+# Create dataset using tibble
+data <- tibble(
+  Participant = 1:11,
+  Gender = c("Male", "Male", "Male", "Male", "Male", 
+             "Female", "Female", "Female", "Female", "Female", "Female"),
+  Score = c(+30, +14, -21, +22, +9, -22, -13, -20, -7, +19, -31),
+  Attitude = c("+", "+", "-", "+", "+", "-", "-", "-", "-", "+", "-")
+)
+kable(data, caption = "number of Female and male")
+
+```
+
+Construct the Contingency Table
+We summarize the data to create a 2x2 contingency table.
+```{r}
+# Create a contingency table
+contingency_table <- data %>%
+  group_by(Gender, Attitude) %>%
+  summarise(Frequency = n(), .groups = "drop") %>%
+  pivot_wider(names_from = Attitude, values_from = Frequency, values_fill = 0)
+
+# Rename columns for clarity
+contingency_table <- contingency_table %>%
+  rename(Positive = `+`, Negative = `-`)
+
+# Display contingency table
+contingency_table
+```
+ Step 5: Compute the Fisher Exact Test Statistic
+The Fisher Exact Test is based on combinations and the hypergeometric probability formula:
+```{r}
+# Extract values from the contingency table
+a <- contingency_table$Positive[1]  # Male Positive
+b <- contingency_table$Negative[1]  # Male Negative
+c <- contingency_table$Positive[2]  # Female Positive
+d <- contingency_table$Negative[2]  # Female Negative
+
+# Compute total sample size
+n <- a + b + c + d
+
+# Compute Fisher's exact probability using factorials
+factorial_fn <- function(x) {
+  if (x == 0) return(1) else return(prod(1:x))
+}
+
+# Compute probability
+p_value <- (factorial_fn(a + c) / (factorial_fn(a) * factorial_fn(c))) *
+           (factorial_fn(b + d) / (factorial_fn(b) * factorial_fn(d))) /
+           (factorial_fn(n) / (factorial_fn(a + b) * factorial_fn(c + d)))
+
+# Display computed p-value
+glimpse(p_value)
+```
+Determine the Critical Value
+Since Fisher's Exact Test is non-parametric, we compare the computed p-value with the significance level α = 0.05.
+```{r}
+# Compare p-value with alpha
+if (p_value < alpha) {
+  result <- "Reject the null hypothesis (significant association between Gender and Attitude)."
+} else {
+  result <- "Fail to reject the null hypothesis (no significant association between Gender and Attitude)."
+}
+
+# Display re
+result
+```
+Interpretation and Conclusion
+```{r}
+cat("The computed p-value is:", p_value, "\n")
+cat("Significance level (α):", alpha, "\n")
+cat("Conclusion:", result, "\n")
+```
+
+ 

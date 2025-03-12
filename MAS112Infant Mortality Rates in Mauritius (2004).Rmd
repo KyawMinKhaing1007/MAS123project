@@ -1,0 +1,55 @@
+---
+title: "Infant Mortality Rates in Mauritius (2004)"
+author: "Kyaw Min Khaing"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Data Input
+
+```{r}
+# Given data
+live_births <- 19230
+day_one_deaths <- 55
+one_week_deaths <- 152
+four_week_deaths <- 207
+infant_deaths <- 277
+
+# Compute rates per 1000 live births
+domr <- (day_one_deaths / live_births) * 1000
+nnmr <- (four_week_deaths / live_births) * 1000
+ennmr <- (one_week_deaths / live_births) * 1000
+lnnmr <- nnmr - ennmr
+pnnmr <- ((infant_deaths - four_week_deaths) / live_births) * 1000
+
+# Create a tibble table
+data <- tibble(
+  Rate = c("Day One Mortality Rate (DOMR)",
+           "Neonatal Mortality Rate (NNMR)",
+           "Early Neonatal Mortality Rate (ENNMR)",
+           "Late Neonatal Mortality Rate (LNNMR)",
+           "Post Neonatal Mortality Rate (PNNMR)"),
+  Value = c(domr, nnmr, ennmr, lnnmr, pnnmr)
+)
+
+# Display the table
+data
+```
+
+## Visualization
+
+```{r pressure, echo=FALSE}
+# Bar chart visualization
+ggplot(data, aes(x = Rate, y = Value, fill = Rate)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Infant Mortality Rates in Mauritius (2004)",
+       x = "Mortality Rate Type", y = "Rate per 1000 Live Births") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

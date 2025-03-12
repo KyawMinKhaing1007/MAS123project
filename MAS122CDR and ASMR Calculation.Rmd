@@ -1,0 +1,144 @@
+---
+title: "MAS122CDR and ASMR Calculation"
+author: "Kyaw Min Khaing"
+date: "2025-02-04"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+Crude Death Rate (CDR) & Age-Specific Mortality Rate (ASMR)
+1. Data Preparation
+
+```{r cars}
+# Create a tibble table with given data
+death_data <- tibble(
+  Age_Group = c("<5", "5-24", "25-44", "45-64", "65+"),
+  Population = c(10900, 33840, 18840, 9840, 2760),
+  Deaths = c(180, 75, 87, 158, 180)
+)
+print(death_data)
+```
+total_population
+## Including Plots
+```{r}
+# Compute Total Population & Total Deaths
+total_population <- sum(death_data$Population)
+print(total_population)
+
+```
+Total_Deaths
+
+```{r pressure, echo=FALSE}
+total_deaths <- sum(death_data$Deaths)
+print(total_deaths)
+
+```
+## **Age-Specific Mortality Rate (ASMR)**
+
+The formula for the **Age-Specific Mortality Rate (ASMR)** is:
+
+\[
+M_x^n = ASMR = \frac{D_x^n}{P_x^n} \times 1000
+\]
+
+where:
+- \( M_x^n \) = Mortality rate for age group \( x \)
+- \( D_x^n \) = Number of deaths in age group \( x \)
+- \( P_x^n \) = Population of age group \( x \)
+
+For example, for the **age group 65+**:
+
+\[
+ASMR = \frac{180}{2760} \times 1000 = 65.22
+\]
+```{r}
+# Compute ASMR for each age group
+death_data <- death_data %>%
+  mutate(ASMR = (Deaths / Population) * 1000)
+print(death_data)
+```
+## **Crude Death Rate (CDR)**
+
+The formula for the **Crude Death Rate (CDR)** is given by:
+
+$$
+CDR = \frac{D}{P} \times 1000
+$$
+
+where:
+- \( D \) = Total number of deaths
+- \( P \) = Total population
+
+\[
+CDR = \frac{680}{76180} \times 1000 = 8.93 \approx 9
+\]
+```{r}
+# Compute CDR
+CDR <- (total_deaths / total_population) * 1000
+print(CDR)
+```
+Display the Results
+```{r}
+# Show Data Table with ASMR
+death_data %>%
+  mutate(ASMR = round(ASMR, 4)) %>%
+  knitr::kable(caption = "Age-Specific Mortality Rate (ASMR) Table")
+print(death_data)
+```
+
+```{r}
+# Display CDR
+cat("### **Crude Death Rate (CDR)**\n")
+cat("CDR =", round(CDR, 0), "deaths per 1000 population\n")
+```
+Visualization of Age-Specific Mortality Rate (ASMR)
+```{r}
+ggplot(death_data, aes(x = Age_Group, y = ASMR, fill = Age_Group)) +
+  geom_bar(stat = "identity") +
+  labs(
+    title = "Age-Specific Mortality Rate (ASMR)",
+    x = "Age Group",
+    y = "ASMR (Deaths per 1000 Population)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = round(ASMR, 2)), vjust = -0.5)
+```
+Line Chart for ASMR Trends
+```{r}
+ggplot(death_data, aes(x = Age_Group, y = ASMR, group = 1)) +
+  geom_line(color = "blue", size = 1) +
+  geom_point(size = 2, color = "red") +
+  labs(
+    title = "ASMR Trends by Age Group",
+    x = "Age Group",
+    y = "ASMR (Deaths per 1000 Population)"
+  ) +
+  theme_minimal() +
+  geom_text(aes(label = round(ASMR, 2)), vjust = -1, color = "black")
+```
+Visualization of Crude Death Rate (CDR)
+```{r}
+cdr_data <- tibble(
+  Category = "Crude Death Rate",
+  CDR = CDR
+)
+
+ggplot(cdr_data, aes(x = Category, y = CDR, fill = Category)) +
+  geom_bar(stat = "identity", width = 0.4) +
+  labs(
+    title = "Crude Death Rate (CDR)",
+    x = "Category",
+    y = "CDR (Deaths per 1000 Population)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = round(CDR, 2)), vjust = -0.5)
+```
+

@@ -1,0 +1,66 @@
+---
+title: "Case-Fatality Rate (CFR) of Malaria at University of Ghana Hospital (1999)"
+author: "Kyaw Min Khaing"
+date: "2025-02-05"
+output: word_document
+---
+## **Introduction**
+This analysis calculates the **Case-Fatality Rate (CFR)** for malaria cases in **University of Ghana Hospital in 1999**.
+
+---
+
+## **Formula for Calculation**
+$$
+CFR = \left( \frac{D_d}{C_d} \right) \times 100
+$$
+
+where:  
+- \( C_d = 955 \) (Total malaria cases)  
+- \( D_d = 54 \) (Total malaria deaths)  
+
+---
+
+## **Data Representation**
+
+```{r cars}
+library(tidyverse)
+```
+
+# Given Data
+
+```{r}
+malaria_data <- tibble(
+  Year = 1999,
+  Total_Cases = 955,
+  Malaria_Deaths = 54,
+  CFR = (54 / 955) * 100  # Case-Fatality Rate in percentage
+)
+
+# Display the tibble table
+malaria_data
+```
+
+Visualization: Case-Fatality Rate
+```{r}
+ggplot(malaria_data, aes(x = "", y = CFR, fill = "Malaria Deaths")) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar("y", start = 0) +
+  labs(title = "Case-Fatality Rate of Malaria (1999)",
+       subtitle = "University of Ghana Hospital",
+       fill = "Cause") +
+  theme_minimal()
+```
+Visualization: Malaria Cases vs. Deaths
+```{r}
+ggplot(malaria_data, aes(x = Year)) +
+  geom_col(aes(y = Total_Cases), fill = "blue", alpha = 0.6) +
+  geom_col(aes(y = Malaria_Deaths), fill = "red", alpha = 0.6) +
+  geom_text(aes(y = Total_Cases, label = Total_Cases), vjust = -0.5, size = 5) +
+  geom_text(aes(y = Malaria_Deaths, label = Malaria_Deaths), vjust = 1.5, size = 5, color = "white") +
+  labs(title = "Malaria Cases and Deaths (1999)",
+       x = "Year",
+       y = "Number of Cases/Deaths",
+       fill = "Legend") +
+  theme_minimal()
+```
+

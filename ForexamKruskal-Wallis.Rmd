@@ -1,0 +1,188 @@
+---
+title: "Forexam122"
+author: "Kyaw Min Khaing"
+date: "2025-01-28"
+output:
+  word_document: default
+  html_document: default
+---
+## State the Null and Research Hypotheses
+
+The null hypothesis is
+HO: θL = θM = θH
+The research hypothesis is
+HA: There is a tendency for self-conidence to rank systematically higher or 
+lower for at least one level of social interaction when compared with the 
+other levels.
+## Set the Level of Risk (or the Level of Signiicance) Associated with the Null Hypothesis
+α = 0.05
+95% chance that any observed statistical difference will be real and not due to chance
+## need library this package
+```{r setup, include=FALSE}
+library(pacman)
+
+p_load(tidyverse,rstatix,ggsignif)
+```
+## Data Preparation
+The table below shows the sample data for three groups (High, Medium, Low)
+
+```{r data-preparation}
+data <- data.frame(
+  High = c(21, 23, 18, 12, 19, 20),
+  Medium = c(19, 5, 10, 11, 9, NA),
+  Low = c(7, 8, 15, 3, 6, 4)
+)
+print(data)
+```
+# Convert to long format for analysis
+```{r}
+data_long <- data %>%
+  pivot_longer(cols = everything(), names_to = "Group", values_to = "Value") %>%
+  drop_na()
+print(data_long)
+# Print the data
+```
+## Ranking Data and Handling Ties
+The Kruskal-Wallis test uses ranks rather than raw data values. We rank all values, including ties.
+```{r}
+ranked_data <- data_long %>%
+  mutate(Rank = rank(Value))
+
+# Display ranked data
+print(ranked_data)
+```
+##  To Compute the Test Statistic doing Group Ranks and Sums
+We calculate the rank sum for each group.
+```{r}
+# Calculate rank sums
+rank_sums <- ranked_data %>%
+  group_by(Group) %>%
+  summarise(
+    n = n(),
+    Rank_Sum = sum(Rank)
+  )
+
+# Print rank sums
+print(rank_sums)
+```
+## To Compute the Test Statistic doing Ties Correction (C_H)
+The ties correction is applied to adjust for tied ranks.
+The formula for the ties correction \( C_H \) is:
+
+\[
+C_H = 1 - \frac{\sum{(T^3 - Ti)}}{N^3 - N}
+\]
+
+Where:
+- \( T \) is the number of tied ranks in each group of ties.
+- \( N \) is the total number of observations.
+
+```{r}
+ties_table <- ranked_data %>%
+  count(Rank)
+
+C_H <- 1 - sum((ties_table$n^3 - ties_table$n) / ((nrow(ranked_data)^3) - nrow(ranked_data)))
+
+# Print ties correction factor
+cat("Ties Correction Factor (C_H):", C_H, "\n")
+```
+## Compute the H-Test Statistic
+We calculate the Kruskal-Wallis H-test statistic using the formula:
+\[
+H = \frac{12}{N(N+1)} \sum \frac{R_i^2}{n_i} - 3(N+1)\]
+
+Where:
+- \(N\) is the total number of observations.
+- \(R_i\) is the rank sum for each group.
+- \(n_i\) is the number of observations in each group.
+```{r}
+# Total number of observations
+N <- nrow(ranked_data)
+# Calculate H statistic
+H <- 12 / (N * (N + 1)) * sum((rank_sums$Rank_Sum^2) / rank_sums$n) - 3 * (N + 1)
+H_corrected <- H / C_H  # Apply ties correction
+# Print H statistic
+cat("H-Test Statistic (Corrected):", round(H_corrected, 4), "\n")
+```
+## Significance Test
+Compare the H statistic to the Chi-Square distribution with \(k-1\) degrees of freedom (where \(k\) is the number of groups) to determine significance.
+
+```{r}
+# Degrees of freedom
+k <- ranked_data %>%
+  summarise(num_groups = n_distinct(Group)) %>%
+  pull(num_groups)
+df <- k - 1
+
+# Critical value and p-value
+alpha <- 0.05
+p_value <- pchisq(H_corrected, df, lower.tail = FALSE)
+
+# Report significance
+cat("Degrees of Freedom (df):", df, "\n")
+cat("p-value for Kruskal-Wallis H-Test:", round(p_value, 4), "\n")
+if (p_value < alpha) {
+  cat("The result is significant at α =", alpha, "\n")
+} else {
+  cat("The result is not significant at α =", alpha, "\n")
+}
+```
+
+```{r}
+# Pairwise Mann-Whitney U tests
+pairwise_results <- ranked_data %>%
+  pairwise_wilcox_test(
+    Value ~ Group,
+    p.adjust.method = "bonferroni"
+  )
+
+# Display results
+print(pairwise_results)
+```
+ Final Report
+```{r}
+cat("### Final Report\n")
+cat("Three groups were analyzed: High (n = 6), Medium (n = 5), and Low (n = 6).\n")
+cat("The corrected Kruskal-Wallis H statistic was", round(H_corrected, 4), "with", df, "degrees of freedom.\n")
+cat("The p-value was", round(p_value, 4), "at α =", alpha, ".\n")
+if (p_value < alpha) {
+  cat("We reject the null hypothesis and conclude that at least one group differs significantly.\n")
+} else {
+  cat("We fail to reject the null hypothesis, suggesting no significant differences between the groups.\n")
+}
+
+# Pairwise significance summary
+cat("\n### Pairwise Comparisons (Mann-Whitney U Test):\n")
+cat("Results adjusted using Bonferroni correction:\n")
+```
+## Visualization
+Visualize the ranked data for each group using a boxplot.
+```{r}
+pairwise_results <- data_long %>%
+  pairwise_wilcox_test(Value ~ Group, p.adjust.method = "bonferroni")
+
+# Create the rank plot with significance brackets
+rank_plot <- ggplot(ranked_data, aes(x = Group, y = Rank, fill = Group)) +
+  geom_boxplot(outlier.color = "red", outlier.shape = 8) +
+  labs(
+    title = "Rank Distribution by Group",
+    x = "Group",
+    y = "Rank"
+  ) +
+  theme_minimal() +
+  geom_signif(
+    comparisons = list(
+      c("High", "Medium"),
+      c("High", "Low"),
+      c("Medium", "Low")
+    ),
+    map_signif_level = TRUE,
+    test = "wilcox.test",  # Perform Mann-Whitney U test directly
+    step_increase = 0.1   # Adjust spacing to avoid overlapping
+  )
+
+# Print the plot
+print(rank_plot)
+```
+
+

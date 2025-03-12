@@ -1,0 +1,126 @@
+---
+title: "ForexamSample Spearman Rank-Order Correlation (Small_Data_Samples _without
+  _Ties)"
+author: "Kyaw Min Khaing"
+date: "2025-01-29"
+output:
+  word_document: default
+  html_document: default
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+library(tidyverse,knitr)
+```
+
+## Introduction
+
+This analysis applies the **Spearman Rank-Order Correlation** to examine
+the relationship between **Number of Visits** and **Mean Heart Rate**
+for a small dataset without ties.
+
+## Step 1: State the Hypotheses
+
+-   **Null Hypothesis (H₀):** There is no significant correlation
+    between the number of visits and the mean heart rate.
+-   **Alternative Hypothesis (H₁):** There is a significant correlation
+    between the number of visits and the mean heart rate. \## Step 2:
+    Set the Level of Significance We set **α = 0.05** as the
+    significance level. \## Step 3: Load and Prepare Data
+
+```{r cars}
+data <- tibble(
+  Participant = 1:8,
+  Visits = c(5, 12, 7, 14, 2, 8, 15, 17),
+  HeartRate = c(100, 89, 78, 66, 77, 103, 67, 63)
+)
+kable(data, caption = "Heart Rate")
+```
+
+## Rank the data
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+ranked_data <- data %>%
+  mutate(
+    Rank_Visits = rank(Visits, ties.method = "average"),
+    Rank_HeartRate = rank(HeartRate, ties.method = "average"),
+    D = Rank_HeartRate - Rank_Visits   ,
+    D_squared = D^2,
+    Ties_Visits = ifelse(duplicated(Rank_Visits) | duplicated(Rank_Visits, fromLast = TRUE), TRUE, FALSE),
+    Ties_HeartRate = ifelse(duplicated(Rank_HeartRate) | duplicated(Rank_HeartRate, fromLast = TRUE), TRUE, FALSE)
+  )
+kable(ranked_data, caption = "Heart Rate D square and Tie")
+```
+
+## Step 4: Compute Spearman's Rank Correlation Coefficient
+
+The formula for Spearman's Rank Correlation Coefficient is:
+
+$$
+  r_s = 1 - \frac{6 \sum D^2}{n(n^2 - 1)}
+$$
+where: - $D$ is the difference between ranks, - $n$ is the number of
+observations.
+
+```{r}
+n <- nrow(ranked_data)
+D_squared_sum <- sum(ranked_data$D_squared)
+
+r_s <- 1 - (6 * D_squared_sum) / (n * (n^2 - 1))
+
+cat("Spearman Rank Correlation Coefficient (ρ):", round(r_s, 4), "\n")
+```
+```{r}
+cor_test_result <- data %>%
+  cor_test(Visits, HeartRate, method = "spearman")
+kable(cor_test_result, caption = "cor")
+```
+
+
+## Step 5: Determine the Critical Value
+
+For **n = 8** and **α = 0.05 (two-tailed test)**, the critical value
+from the **Spearman correlation table** is **±0.738**.
+
+## Step 6: Compare the Obtained Value with the Critical Value
+
+```{r}
+if (abs(r_s) >= 0.738) {
+  cat("The correlation is statistically significant. We reject H₀ and conclude there is a significant correlation.\n")
+} else {
+  cat("The correlation is not statistically significant. We fail to reject H₀.\n")
+}
+```
+
+## Step 7: Interpret the Results
+
+If **\|ρ\| ≥ 0.738**, the result is significant.
+
+## Step 8: Reporting the Results
+
+> *A Spearman rank-order correlation was conducted to determine the
+> relationship between the number of visits and mean heart rate. The
+> analysis yielded ρ = `r round(r_s, 4)`. Since the obtained ρ is
+> `r ifelse(abs(r_s) >= 0.738, "greater", "less")` than the critical
+> value of 0.738, we
+> `r ifelse(abs(r_s) >= 0.738, "reject", "fail to reject")` the null
+> hypothesis. This suggests that there
+> `r ifelse(abs(r_s) >= 0.738, "is", "is no")` significant correlation
+> between the two variables.*
+
+```{r}
+# Convert data to long format for visualization
+ggplot(data, aes(x = Visits, y = HeartRate)) +
+  geom_point(size = 4, color = "blue") +  # Data points များကို ပြသပါ
+  geom_smooth(method = "lm", se = FALSE, color = "red") +  # Trend line ထည့်ပါ
+  labs(
+    title = "Scatterplot of Visits vs HeartRate",
+    x = "Number of Visits",
+    y = "Heart Rate"
+  ) +
+  theme_minimal() 
+```

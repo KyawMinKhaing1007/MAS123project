@@ -1,0 +1,91 @@
+---
+title: "Maternal Mortality Ratio (MMR) Calculation & Visualization"
+author: "Kyaw Min Khaing"
+date: "2025-02-04"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(pacman)
+p_load(tidyverse,ggplot2,kableExtra,latex2exp)
+```
+
+Given Data
+
+```{r}
+# Define given values
+P <- 350000  # Total Population
+B <- 75000   # Total Live Births
+D_p <- 245   # Pregnancy-Related Deaths
+```
+
+# Compute MMRo (Maternal Mortality Ratio)
+## Maternal Mortality Ratio (MMRo)
+The formula for the Maternal Mortality Ratio (MMRo) is:
+
+$$
+MMR_o = \left( \frac{D_p}{B} \right) \times 1000
+$$
+
+Where:  
+- \( D_p \) = Number of pregnancy-related deaths  
+- \( B \) = Total live births 
+You can also embed plots, for example:
+
+```{r}
+MMRo <- (D_p / B) * 1000
+print(MMRo)
+```
+
+# Compute Maternal Mortality (MM)
+## Maternal Mortality (MM)
+The formula for Maternal Mortality is:
+
+$$
+Maternal\ Mortality = \frac{MMR_o \times P}{1000}
+$$
+
+Where:  
+- \( P \) = Total population  
+- \( MMR_o \) = Maternal Mortality Ratio  
+```{r}
+Maternal_Mortality <- (MMRo * P) / 1000
+print(Maternal_Mortality)
+```
+
+# Create a tibble table
+
+```{r}
+mmr_data <- tibble(
+  Metric = c("Total Population", "Total Live Births", "Pregnancy-Related Deaths", "Maternal Mortality Ratio (MMRo)", "Maternal Mortality"),
+  Value = c(P, B, D_p, round(MMRo, 2), round(Maternal_Mortality))
+)
+print(mmr_data)
+
+```
+
+# ✅ Ensure correct usage of dplyr filter()
+
+```{r}
+mmr_data_filtered <- mmr_data %>% 
+  filter(Metric == "Maternal Mortality Ratio (MMRo)")
+print(mmr_data_filtered)
+```
+
+
+Maternal Mortality Bar Chart
+```{r}
+ggplot(mmr_data_filtered , aes(x = Metric, y = Value, fill = Metric)) +
+  geom_bar(stat = "identity", width = 0.4) +
+  labs(
+    title = "Maternal Mortality Ratio (MMRo)",
+    x = "Metric",
+    y = "Value (per 1000 Live Births)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none") +
+  geom_text(aes(label = round(Value, 2)), vjust = -0.5)
+```
+
+
+

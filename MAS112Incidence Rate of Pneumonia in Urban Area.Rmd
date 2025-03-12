@@ -1,0 +1,50 @@
+---
+title: "MAS112Incidence Rate of Pneumonia in Urban Area"
+author: "Kyaw Min Khaing"
+date: "2025-02-05"
+output: word_document
+---
+
+## **Introduction**
+
+This report calculates the incidence rate of pneumonia over a 10-year period among a population of **118,540** people in an urban area.
+
+### **Formula for Incidence Rate**
+
+$$
+Incidence\ Rate = \left( \frac{\text{New Cases}(t)}{\text{Population}(t)} \right) \times 10,000
+$$
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## \# Given Data
+
+```{r cars}
+pneumonia_data <- tibble(
+  Year = 2000:2009,  # 10-year period
+  Total_Population = rep(118540, 10),
+  New_Cases = rep(322/10, 10),  # Average cases per year
+  Incidence_Rate = (322/10) / 118540 * 10000  # Incidence Rate Calculation
+)
+
+# Display the tibble table
+pneumonia_data
+```
+
+## Visualization of Pneumonia Incidence Rate
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+ggplot(pneumonia_data, aes(x = Year, y = New_Cases)) +
+  geom_col(fill = "steelblue") +
+  geom_text(aes(label = round(New_Cases, 1)), vjust = -0.5, size = 5) +
+  labs(title = "Incidence of Pneumonia Cases Over 10 Years",
+       x = "Year",
+       y = "New Pneumonia Cases per Year") +
+  theme_minimal()
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

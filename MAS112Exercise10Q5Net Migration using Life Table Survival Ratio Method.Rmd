@@ -1,0 +1,52 @@
+---
+title: "Net Migration using Life Table Survival Ratio Method"
+author: "Kyaw Min Khaing"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra) 
+```
+
+## The population statistics for different age groups (2000-2010) are given:
+
+```{r cars}
+migration_data <- tibble(
+  Age_2000 = c("0-4", "5-9", "10-14", "15-19", "20-24", "25-29", "30-34"),
+  Age_2010 = c("10-14", "15-19", "20-24", "25-29", "30-34", "35-39", "40-49"),
+  Population_2000 = c(5846, 5591, 5243, 4715, 4322, 4012, 3857),
+  Population_2010 = c(7534, 7291, 6912, 6754, 6238, 5973, 5415),
+  Probability_Dying = c(0.0148, 0.0156, 0.0232, 0.0295, 0.0419, 0.0709, 0.1251)
+)
+print(migration_data)
+```
+
+# Compute Probability of Surviving
+
+```{r}
+migration_data <- migration_data %>%
+  mutate(Probability_Surviving = 1 - Probability_Dying)
+print(migration_data)
+```
+
+# Compute Expected Survivors
+```{r}
+migration_data <- migration_data %>%
+  mutate(Expected_Survivors = round(Population_2000 * Probability_Surviving))
+print(migration_data)
+```
+# Compute Net Migration
+```{r}
+migration_data <- migration_data %>%
+  mutate(Net_Migration = Population_2010 - Expected_Survivors)
+print(migration_data)
+```
+# Display the tibble table
+```{r}
+migration_data %>%
+  kbl() %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+

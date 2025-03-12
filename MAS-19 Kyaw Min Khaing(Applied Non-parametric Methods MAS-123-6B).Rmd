@@ -1,0 +1,594 @@
+---
+title: "Applied Non-parametric Methods MAS-123-6B"
+author: "Kyaw Min Khaing"
+date: "2025-02-16"
+output: word_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,    
+  warning = FALSE, 
+  message = FALSE, 
+  fig.width = 6,   
+  fig.height = 4   
+)
+```
+
+# Load necessary package
+
+```{r}
+library(pacman)
+p_load(rmarkdown,officer,knitr,kableExtra,latex2exp,xtable,flextable,tidyverse, rstatix, ggsignif)
+```
+
+#### Load necessary package
+
+# 2
+
+You are doing research for an article on the waterfalls on our planet.
+You want to make a statement about the heights of waterfalls on three
+continents. Three random samples of waterfall heights (in feet) are
+shown.
+
+```{r cars}
+# Create dataset
+waterfall_data <- tibble(
+  Continent = rep(c("North America", "Africa", "Asia"), each = 6),
+  Height = c(600, 1200, 182, 620, 1170, 442, 
+             406, 508, 630, 726, 480, 2014,
+             330, 830, 614, 1100, 885, 330)
+)
+kable(waterfall_data, caption = "Sorted Waterfall Heights")
+```
+
+#### (a) What questions are you trying to answer? 
+Is there a significant difference in the heights of waterfalls among the
+three countries being compared?
+
+#### b) What nonparametric test would you use to find the answer? 
+
+The most appropriate nonparametric test for this scenario is the
+Kruskal-Wallis H-test. This test is suitable because it is used to
+compare the medians of three or more independent groups when the data
+does not meet the assumptions required for parametric tests (such as
+normality or equal variances). Since we are comparing the heights of
+waterfalls across three countries, the Kruskal-Wallis H-test is the
+ideal choice to determine if there are statistically significant
+differences in the medians of the groups.Since the data may not be
+normally distributed, we use the Kruskal-Wallis test, a nonparametric
+alternative to ANOVA.
+
+#### (c) What are the hypotheses?
+
+-   **Null Hypothesis (H0):**: The median waterfall heights are the same
+    across all three continents.
+
+-   **Alternative Hypothesis (H1):**: At least one continent has a
+    different median waterfall height. \## Rank and Tie Case
+
+You can also embed plots, for example:
+
+```{r}
+ranked_data <- waterfall_data |> 
+  mutate(Rank = rank(Height), 
+         Tie_Case = duplicated(Height) | duplicated(Height, fromLast = TRUE)) |> 
+  arrange(Rank)
+
+# Display ranked data
+kable(ranked_data, caption = "Sorted Waterfall Heights, Ranks, and Tie Cases")
+```
+
+####(d) Select a significance level and run the test. What is the H value?
+Compute H Statistic Manually
+
+```{r}
+# Compute total rank per continent
+rank_sums <- ranked_data %>% 
+  group_by(Continent) %>% 
+  summarise(Rank_Sum = sum(Rank), n = n())
+kable(rank_sums, caption = "Rank Sums Calculate H statistic ")
+```
+
+Compute H statistic $$
+H = \frac{12}{N(N+1)} \sum \frac{R_i^2}{n_i} - 3(N+1)$$
+
+Where: - $N$ is the total number of observations. - $R_i$ is the rank
+sum for each group. - $n_i$ is the number of observations in each group.
+
+To Compute the Test Statistic doing Ties Correction (C_H)
+
+The ties correction is applied to adjust for tied ranks. The formula for
+the ties correction $C_H$ is:
+
+$$
+C_H = 1 - \frac{\sum{(T^3 - Ti)}}{N^3 - N}
+$$
+
+Where: - $T$ is the number of tied ranks in each group of ties. - $N$ is
+the total number of observations.
+
+```{r}
+N <- nrow(ranked_data)
+H <- (12 / (N * (N + 1))) * sum((rank_sums$Rj^2) / rank_sums$nj) - 3 * (N + 1)
+
+# Compute tie correction factor
+tie_counts <- ranked_data |> count(Rank) |> filter(n > 1) |> pull(n)
+C <- 1 - sum(tie_counts^3 - tie_counts) / (N^3 - N)
+
+# Adjust H for ties
+H_corrected <- H / C
+
+# Display results
+kable(tibble(H_original = H, Tie_Correction = C, H_corrected = H_corrected), 
+      caption = "Kruskal-Wallis H Statistic with Tie Correction")
+```
+
+Kruskal-Wallis Test Computation
+
+```{r}
+# Perform Kruskal-Wallis test
+kruskal_result <- kruskal_test(waterfall_data, Height ~ Continent)
+p_value <- kruskal_result$p  # p-value ကို ဖတ်ယူပါ
+
+# Display result
+kable(kruskal_result, caption = "Kruskal-Wallis Test Results")
+```
+####(e) What is your conclusion? 
+```{r}
+p_value <- kruskal_result$p
+
+# Check significance
+if (p_value < 0.05) {
+  cat("The result is significant (p =", round(p_value, 3), "). There is evidence that at least one continent has a different median waterfall height.\n")
+} else {
+  cat("The result is not significant (p =", round(p_value, 3), "). We do not have enough evidence to conclude that waterfall heights differ by continent.\n")
+}
+```
+
+Visualization: Boxplot of Waterfall Heights by Continent
+
+```{r}
+ggplot(waterfall_data, aes(x = Continent, y = Height, fill = Continent)) +
+  geom_boxplot(outlier.color = "red", alpha = 0.7) +
+  geom_jitter(aes(color = Continent), width = 0.2, size = 2, alpha = 0.7) +
+  labs(title = "Distribution of Waterfall Heights by Continent",
+       x = "Continent",
+       y = "Waterfall Height (ft)") +
+  theme_minimal() +
+  scale_fill_manual(values = c("North America" = "blue", "Africa" = "green", "Asia" = "purple")) +
+  scale_color_manual(values = c("North America" = "blue", "Africa" = "green", "Asia" = "purple")) +
+  theme(legend.position = "none")
+
+```
+
+# 3(a)
+
+As a biologist, you wish to see if there is a relationship between the
+heights of tall trees and their diameters. You find the following data
+for the diameter (in inches) of the tree at 4.5 feet from the ground and
+the corresponding heights (in feet).
+#### What question are you trying to answer? 
+(i) Research Question Is there a relationship between the diameter of a tree and its height?
+#### What type of nonparametric analysis could be used to answer the question? 
+(ii) Nonparametric Test Selection To analyze the relationship between
+     the two continuous variables (tree diameter and tree height), the
+     Spearman’s rank correlation test is the most appropriate
+     nonparametric method. This test is used to assess the strength and
+     direction of the association between two variables when the data
+     does not meet the assumptions of parametric tests (such as
+     normality or linearity). Spearman’s rank correlation is
+     particularly useful for ordinal data or when the relationship
+     between variables is monotonic but not necessarily linear.
+####  Is there a relationship between the two at the 0.05 level of significance?
+(iii)
+-   **Null Hypothesis (H0):**: There is no monotonic relationship
+          between tree diameter and height. (𝜌=0
+
+-   **Alternative Hypothesis (H1):**: There is a significant monotonic
+    relationship between tree diameter and height. (𝜌≠0)
+
+
+```{r}
+# Create dataset
+tree_data <- tibble(
+  Diameter = c(1024, 950, 451, 505, 761, 644, 707, 586, 442, 546),
+  Height = c(261, 321, 219, 281, 159, 83, 191, 141, 232, 108)
+)
+kable(tree_data, caption = "Sorted Tree Data")
+```
+
+Rank transformation and check for ties
+
+```{r}
+ranked_tree_data <- tree_data |> 
+  mutate(Rank_Diameter = rank(Diameter), 
+         Rank_Height = rank(Height), 
+         Tie_Case_Diameter = duplicated(Diameter) | duplicated(Diameter, fromLast = TRUE),
+         Tie_Case_Height = duplicated(Height) | duplicated(Height, fromLast = TRUE)) |> 
+  arrange(Rank_Diameter)
+# Display ranked data
+kable(ranked_tree_data, caption = "Sorted Tree Data with Ranks and Tie Cases")
+```
+
+ Spearman Rank Correlation Computation
+
+```{r}
+# Compute Spearman correlation
+spearman_result <- cor_test(tree_data, Diameter, Height, method = "spearman")
+
+# Display results
+kable(spearman_result, caption = "Spearman Rank Correlation Results")
+```
+
+ Conclusion
+
+```{r}
+if (spearman_result$p < 0.05) {
+  cat("The result is significant (p < 0.05). There is evidence of a monotonic relationship between tree diameter and height.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). We do not have enough evidence to conclude a monotonic relationship.\n")
+}
+```
+
+ Visualization: Scatter Plot with Rank Correlation Trendline
+
+```{r}
+ggplot(tree_data, aes(x = Diameter, y = Height)) +
+  geom_point(color = "blue", size = 3, alpha = 0.7) +
+  geom_smooth(method = "lm", se = FALSE, color = "red", linetype = "dashed") +
+  labs(title = "Scatter Plot of Tree Diameter vs. Height",
+       x = "Diameter (inches)",
+       y = "Height (feet)") +
+  theme_minimal()
+```
+
+# 3(b)
+
+A study is conducted to determine whether there is a correlation between
+handedness and eye-hand coordination. Five right-handed and five
+left-handed subjects are administered a test of eye-hand coordination.
+The test scores of the subjects follow (the higher a subject’s score,
+the better his or her eye-hand coordination). Is there a statistical
+relationship between handedness and eye hand coordination?
+
+```{r}
+# Create dataset
+data <- tibble(
+  Subject = 1:10,
+  Handedness = c(1, 1, 1, 1, 1, 0, 0, 0, 0, 0),  # Right-handed = 1, Left-handed = 0
+  Coordination_Score = c(11, 1, 0, 2, 0, 11, 11, 5, 8, 4)  # Higher = better coordination
+)
+
+# Display data
+kable(data, caption = "Dataset: Handedness and Eye-Hand Coordination Scores")
+```
+
+(i) Research Question Is there a significant relationship between
+    handedness (X: Right-handed = 1, Left-handed = 0) and eye-hand
+    coordination scores (Y: Higher score = better coordination)?
+(ii) Nonparametric Test Selection Since X is binary (categorical) and Y
+     is continuous, the Point-Biserial Correlation is the appropriate
+     statistical test.
+(iii) Hypotheses Null Hypothesis (H₀): There is no correlation between
+      handedness and eye-hand coordination. (𝑟𝑝𝑏=0) Alternative
+      Hypothesis (H₁): There is a significant correlation between
+      handedness and eye-hand coordination. (𝑟𝑝𝑏≠0)
+(iv) Compute Point-Biserial Correlation
+
+```{r}
+# Compute Point-Biserial Correlation
+pb_correlation <- cor_test(data, Handedness, Coordination_Score, method = "pearson")
+
+# Display results
+kable(pb_correlation, caption = "Point-Biserial Correlation Results")
+```
+conculation
+```{r}
+if (pb_correlation$p < 0.05) {
+  cat("The result is significant (p < 0.05). There is evidence of a relationship between handedness and eye-hand coordination.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). We do not have enough evidence to conclude a relationship between handedness and eye-hand coordination.\n")
+}
+```
+
+ Visualization: Boxplot of Coordination Scores by Handedness
+
+```{r}
+ggplot(data, aes(x = as.factor(Handedness), y = Coordination_Score, fill = as.factor(Handedness))) +
+  geom_boxplot(alpha = 0.7) +
+  geom_jitter(aes(color = as.factor(Handedness)), width = 0.2, size = 3, alpha = 0.7) +
+  labs(title = "Eye-Hand Coordination Scores by Handedness",
+       x = "Handedness (1 = Right, 0 = Left)",
+       y = "Coordination Score") +
+  scale_fill_manual(values = c("0" = "blue", "1" = "red")) +
+  scale_color_manual(values = c("0" = "blue", "1" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+#4(a)
+
+The gender of 20 consecutive patients who register at the emergency room
+of a local hospital is recorded below (where: M = Male; F = Female). F F
+F M M M F F M M F M F M F M M M F F Do the data suggest that the gender
+distribution of entering patients is random?
+
+```{r}
+# Create dataset
+data <- tibble(
+  Patient = 1:20,
+  Gender = c("F", "F", "F", "M", "M", "M", "F", "F", "M", "M",
+             "F", "M", "F", "M", "F", "M", "M", "M", "F", "F")
+)
+
+# Display data
+kable(data, caption = "Recorded Gender Data for ER Patients")
+```
+
+(i) Research Question Is the gender sequence of emergency room patients
+    random, or does it show a pattern?
+(ii) Statistical Test Selection The Runs Test for randomness is used to
+     check whether the sequence of genders is random.
+(iii) Hypotheses Null Hypothesis (H₀): The sequence of gender arrivals
+      is random. Alternative Hypothesis (H₁): The sequence of gender
+      arrivals is not random.
+(iv) Compute Runs Test
+
+```{r}
+# Convert Gender to Binary (F = 0, M = 1)
+data <- data %>% mutate(Gender_Binary = ifelse(Gender == "M", 1, 0))
+kable(data, caption = "Gender_Binary")
+```
+
+Runs test function
+Compute the Expected Number of Runs and Standard Deviation
+
+The expected number of runs (\(E(R)\)) and the standard deviation (\(\sigma_R\)) are given by:
+
+\[
+E(R) = \frac{2n_1 n_2}{n} + 1
+\]
+
+\[
+\sigma_R = \sqrt{\frac{2n_1 n_2(2n_1 n_2 - n)}{n^2(n-1)}}
+\]
+
+where:
+- \( n_1 \) = number of **M** (Male occurrences)
+- \( n_2 \) = number of **F** (Female occurrences)
+- \( n = n_1 + n_2 \)
+
+```{r}
+# Runs test function
+runs_test <- function(sequence) {
+  n1 <- sum(sequence == 1) # Count of M
+  n2 <- sum(sequence == 0) # Count of F
+  N <- n1 + n2             # Total count
+  
+  # Count the number of runs
+  runs <- sum(diff(sequence) != 0) + 1
+  
+  # Mean and standard deviation of runs
+  mean_runs <- (2 * n1 * n2) / N + 1
+  sd_runs <- sqrt((2 * n1 * n2 * (2 * n1 * n2 - N)) / (N^2 * (N - 1)))
+  
+  # Compute Z-score
+  z_score <- (runs - mean_runs) / sd_runs
+  p_value <- 2 * pnorm(-abs(z_score)) # Two-tailed test
+  
+  return(tibble(Runs = runs, Expected_Runs = mean_runs, Z_Score = z_score, P_Value = p_value))
+}
+
+# Perform the Runs Test
+runs_test_result <- runs_test(data$Gender_Binary)
+
+# Display results
+kable(runs_test_result, caption = "Runs Test Results")
+
+```
+conclution
+```{r}
+if (runs_test_result$P_Value < 0.05) {
+  cat("The result is significant (p < 0.05). The gender sequence does not appear to be random.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). We do not have enough evidence to conclude that the gender sequence is non-random.\n")
+}
+```
+
+ Visualization: Gender Sequence Plot
+
+```{r}
+ggplot(data, aes(x = Patient, y = Gender_Binary, color = Gender)) +
+  geom_point(size = 5) +
+  scale_color_manual(values = c("F" = "blue", "M" = "red")) +
+  labs(title = "Sequence of Gender Arrivals in ER",
+       x = "Patient Number",
+       y = "Gender (0 = Female, 1 = Male)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+#4 (b)
+
+A sample of consecutively produced bolts is selected from an
+assembly line and measured. The following are the deviations in
+thousandths of an inch of the lengths of the bolts from 3.000 inches:
+
+```{r}
+bolt_deviations <- c(4, 2, -2, 3, 8, 4, 3, 3, 1, 4, 1, 
+                     1, 5, 3, -2, 6, 1, 3, -11, -10, 12, 5, 
+                     3, 7, 8, -9, 3, 3, -2, 10, -1, 4, -5, 
+                     6, -3, 1, 5, 3, 5, 3, -1, -5, 3, -7, 
+                     -4, 4, -2, -1, -2, -1, 10, -5, -5, 5, -2, 
+                     1, -7, 4, 4, -5)
+kable(bolt_deviations, caption = "Bolt Length Deviation Data")
+```
+
+```{r}
+data <- tibble(
+  Measurement = bolt_deviations,
+  Category = ifelse(bolt_deviations >= 0, 1, 0)  # 1 = Above or equal to 3.000, 0 = Below
+)
+
+# Display first few rows
+kable(head(data, 10), caption = "Bolt Length Deviation Data")
+```
+
+ Compute the Expected Number of Runs and Standard Deviation
+
+The expected number of runs (\(E(R)\)) and the standard deviation (\(\sigma_R\)) are given by:
+
+\[
+E(R) = \frac{2n_1 n_2}{n} + 1
+\]
+
+\[
+\sigma_R = \sqrt{\frac{2n_1 n_2(2n_1 n_2 - n)}{n^2(n-1)}}
+\]
+
+where:
+- \( n_1 \) = number of **M** (Male occurrences)
+- \( n_2 \) = number of **F** (Female occurrences)
+- \( n = n_1 + n_2 \)
+
+```{r}
+runs_test <- function(sequence) {
+  n1 <- sum(sequence == 1) # Count of Above (1)
+  n2 <- sum(sequence == 0) # Count of Below (0)
+  N <- n1 + n2             # Total count
+  
+  # Count the number of runs
+  runs <- sum(diff(sequence) != 0) + 1
+  
+  # Mean and standard deviation of runs
+  mean_runs <- (2 * n1 * n2) / N + 1
+  sd_runs <- sqrt((2 * n1 * n2 * (2 * n1 * n2 - N)) / (N^2 * (N - 1)))
+  
+  # Compute Z-score
+  z_score <- (runs - mean_runs) / sd_runs
+  p_value <- 2 * pnorm(-abs(z_score)) # Two-tailed test
+  
+  return(tibble(Runs = runs, Expected_Runs = mean_runs, Z_Score = z_score, P_Value = p_value))
+}
+
+```
+
+
+```{r}
+# Perform the Runs Test
+runs_test_result <- runs_test(data$Category)
+
+# Display results
+kable(runs_test_result, caption = "Runs Test Results")
+```
+ 
+ 
+ Conclusion
+
+```{r}
+if (runs_test_result$P_Value < 0.05) {
+  cat("The result is significant (p < 0.05). The sequence of bolt deviations does not appear to be random.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). We do not have enough evidence to conclude that the sequence is non-random.\n")
+}
+```
+
+# 5(a)
+
+#### Hypotheses:
+
+-   **Null Hypothesis (H0):** There is no association between gender and
+    scoring above/below the median.
+-   **Alternative Hypothesis (H1):** There is an association between
+    gender and scoring above/below the median.
+
+```{r}
+data_eye_hand <- tibble(
+  Gender = rep(c("Male", "Female"), each = 2),
+  Score = rep(c("Above Median", "Below Median"), 2),
+  Count = c(30, 70, 60, 40)
+)
+
+kable(data_eye_hand)
+```
+
+### Perform Chi-Square Test
+
+```{r}
+table_eye_hand <- matrix(c(30, 70, 60, 40), nrow = 2, byrow = TRUE)
+chisq_test_result <- chisq.test(table_eye_hand)
+chisq_test_result
+```
+
+### Visualization
+
+```{r}
+ggplot(data_eye_hand, aes(x = Gender, y = Count, fill = Score)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Gender Differences in Eye-Hand Coordination",
+       x = "Gender",
+       y = "Count",
+       fill = "Score Category")
+```
+
+5(b)
+
+A researcher conducts a study in order to evaluate the effect of noise
+on altruistic behavior. Each of the 12 subjects who participate in the
+experiment is randomly assigned to one of two experimental conditions.
+Subjects in both conditions are given a one-hour test which is
+ostensibly a measure of intelligence. During the test the six subjects
+in Group 1 are exposed to continual loud noise, which they are told is
+due to a malfunctioning generator. The six subjects in Group 2 are not
+exposed to any noise during the test. Upon completion of this stage of
+the experiment, each subject on leaving the room is confronted by a
+middle-aged man whose arm is in a sling. The man asks the subject if she
+would be willing to help him carry a heavy package to his car. In
+actuality, the man requesting help is an experimental confederate (i.e.,
+working for the experimenter). The number of subjects in each group who
+help the man is recorded. One of the six subjects who were exposed to
+noise elects to help the man, while five of the six subjects who were
+not exposed to noise elect to help the man. Do the data indicate that
+altruistic behavior is influenced by noise?
+
+## Fisher's Exact Test for Noise Effect on Altruistic Behavior
+
+### Hypotheses:
+
+-   **Null Hypothesis (H0):** There is no association between noise
+    exposure and altruistic behavior.
+-   **Alternative Hypothesis (H1):** There is an association between
+    noise exposure and altruistic behavior.
+
+```{r}
+data_altruism <- matrix(c(1, 5, 5, 1), nrow = 2, byrow = TRUE,
+                         dimnames = list(Noise = c("Exposed", "Not Exposed"),
+                                         Help = c("Yes", "No")))
+data_altruism
+```
+
+```{r}
+fisher_test_result <- fisher.test(data_altruism)
+fisher_test_result
+```
+
+### Visualization
+
+```{r}
+data_altruism_long <- as_tibble(as.table(data_altruism))
+colnames(data_altruism_long) <- c("Noise", "Help", "Count")
+
+ggplot(data_altruism_long, aes(x = Noise, y = Count, fill = Help)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  labs(title = "Effect of Noise on Altruistic Behavior",
+       x = "Noise Exposure",
+       y = "Count",
+       fill = "Help Response")
+
+```

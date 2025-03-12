@@ -1,0 +1,114 @@
+---
+title: "Fertility Measures Calculation"
+author: "Kyaw Min Khaing"
+date: "`r Sys.Date()`"
+output: word_document
+---
+
+## Total Fertility Rate (TFR)
+
+$$
+TFR = 5 \sum f_x
+$$
+
+-   The TFR measures the total number of children a woman would have if age-specific fertility rates (ASFR) remain constant.
+-   **Result:** $TFR = 3$ → Each woman would have about 3 births on average.
+
+## General Fertility Rate (GFR)
+
+$$
+GFR = \frac{B}{F_{15-49}} \times 1000
+$$
+
+where:\
+- $B$ = Total number of live births\
+- $F_{15-49}$ = Number of females aged 15-49
+
+-   The GFR measures the number of live births per 1000 women in the reproductive age group (15-49 years).
+-   **Result:** $GFR = 102$ → There were 102 live births per 1000 women aged 15-49.
+
+## Gross Reproduction Rate (GRR)
+
+$$
+GRR = 5 \sum f_x^*
+$$
+
+where:\
+- $f_x^*$ = Age-specific fertility rate (ASFR) for female births only
+
+-   The GRR measures the number of daughters a woman would produce if age-specific fertility rates remain constant.
+-   **Result:** $GRR = 2$ → Each woman would produce 2 daughters on average.
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Fertility Data Table
+
+```{r}
+# Data entry using tibble
+fertility_data <- tibble(
+  Age_Group = c("15-19", "20-24", "25-29", "30-34", "35-39", "40-44", "45-49", "Total"),
+  Females_000 = c(465, 432, 360, 321, 289, 227, 170, 2264),
+  Live_Births_000 = c(26, 65, 61, 42, 21, 10, 7, 232),
+  Female_Live_Births_000 = c(13, 42, 35, 28, 12, 6, 3, 139),
+  ASFR = c(0.0559, 0.1505, 0.1694, 0.1308, 0.0727, 0.0441, 0.0412, 0.6646),
+  ASFR_Female = c(0.0279, 0.0972, 0.0972, 0.0872, 0.0415, 0.0264, 0.0176, 0.3950)
+)
+
+# Display tibble table
+fertility_data
+```
+
+## Including Plots
+
+You can also embed plots, for example: Total Fertility Rate (TFR)
+
+```{r pressure, echo=FALSE}
+# Compute TFR
+TFR <- 5 * sum(fertility_data$ASFR[1:7])
+TFR
+```
+
+General Fertility Rate (GFR) The General Fertility Rate (GFR) is calculated as:
+
+```{r}
+# Compute GFR
+GFR <- (fertility_data$Live_Births_000[8] / fertility_data$Females_000[8]) * 1000
+GFR
+```
+
+Gross Reproduction Rate (GRR)
+
+```{r}
+# Compute GRR
+GRR <- 5 * sum(fertility_data$ASFR_Female[1:7])
+GRR
+```
+
+Visualization of ASFR
+
+```{r}
+ggplot(fertility_data, aes(x = Age_Group, y = ASFR)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  theme_minimal() +
+  labs(title = "Age-Specific Fertility Rate (ASFR)",
+       x = "Age Group",
+       y = "ASFR")
+```
+
+Comparison of TFR, GFR, and GRR
+
+```{r}
+fertility_measures <- tibble(
+  Measure = c("TFR", "GFR", "GRR"),
+  Value = c(TFR, GFR, GRR)
+)
+
+ggplot(fertility_measures, aes(x = Measure, y = Value, fill = Measure)) +
+  geom_bar(stat = "identity") +
+  theme_minimal() +
+  labs(title = "Comparison of Fertility Measures",
+       x = "Measure",
+       y = "Value")
+```

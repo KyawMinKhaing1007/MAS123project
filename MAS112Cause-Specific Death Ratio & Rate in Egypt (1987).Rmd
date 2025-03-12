@@ -1,0 +1,74 @@
+---
+title: "MAS122Cause-Specific Death Ratio & Rate in Egypt (1987)"
+author: "Kyaw Min Khaing"
+date: "2025-02-05"
+output:
+  word_document: default
+  html_document: default
+---
+
+## **Introduction**
+
+This analysis calculates the **Cause-Specific Death Ratio (CSDR)** and **Cause-Specific Death Rate (CSDRate)** for **hyperplasia of the prostate** in Egypt in 1987.
+
+---
+## **Formulae for Calculation**
+$$
+CSDR = \left( \frac{D_c}{D} \right) \times 100
+$$
+
+$$
+CSDRate = \left( \frac{D_c}{P} \right) \times 100,000
+$$
+
+where:  
+- \( D_c = 3,319 \) (Deaths due to hyperplasia of the prostate)  
+- \( D = 466,161 \) (Total deaths)  
+- \( P = 49,089,000 \) (Mid-year population)  
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+# Given Data
+
+```{r cars}
+death_data <- tibble(
+  Year = 1987,
+  Total_Deaths = 466161,
+  Deaths_Hyperplasia = 3319,
+  Population = 49089000,
+  CSDR = (3319 / 466161) * 100,  # Cause-Specific Death Ratio
+  CSDRate = (3319 / 49089000) * 100000  # Cause-Specific Death Rate per 100,000
+)
+
+# Display the tibble table
+death_data
+```
+
+## Visualization: Cause-Specific Death Ratio
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+ggplot(death_data, aes(x = "", y = CSDR, fill = "Hyperplasia of Prostate")) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar("y", start = 0) +
+  labs(title = "Cause-Specific Death Ratio (Hyperplasia of Prostate)",
+       subtitle = "Egypt, 1987",
+       fill = "Cause") +
+  theme_minimal()
+```
+
+Visualization: Cause-Specific Death Rate
+
+```{r}
+ggplot(death_data, aes(x = Year, y = CSDRate)) +
+  geom_col(fill = "darkred") +
+  geom_text(aes(label = round(CSDRate, 2)), vjust = -0.5, size = 5) +
+  labs(title = "Cause-Specific Death Rate per 100,000 Population",
+       x = "Year",
+       y = "Death Rate") +
+  theme_minimal()
+```

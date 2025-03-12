@@ -1,0 +1,265 @@
+---
+title: "Kruskal Wallis Test"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+date: "2025-01-27"
+---
+date: "2025-01-27"
+Presented by Group 1 students 
+1. Ma Cho Cho Yee (MAS 1 - 8)
+2. Mg Kaung Myat Thu (MAS 1 - 13)
+3. Mg Kyaw Min Khaing (MAS 1 - 19)
+4. Mg Kyaw Swar Tun (MAS 1 - 20)
+5. Mg Nay Aung (MAS 1 - 30)
+6. Mg Nay Myo Aung (MAS 1 - 31)
+7. Mg Soe Eain Htet (MAS 1 - 34)
+8. Mg Thet Paing Htet (MAS 1 - 39)
+9. Mg Wai Linn Htet Thwin (MAS 1 - 43)
+10 Mg Yan Naing Soe (MAS 1 - 51)
+---
+
+Kruskal-Wallis H-test statistic using the formula: 
+$$
+H = \frac{12}{N(N+1)} \sum \frac{R_i^2}{n_i} - 3(N+1)$$
+
+Where: - $N$ is the total number of observations. - $R_i$ is the rank sum for each group. - $n_i$ is the number of observations in each group.
+
+Assumption-
+
+1.  non-parametric statistical test
+2.  three or more independent groups
+3.  if there are statistically significant differences between them ,it is an extension of the Mann_Whitney U test which is used for comparing two groups.
+
+In this 1974 Motor Trend US magazine , is there a significant difference between Cylinder Count (cyl) and Horsepower (hp)? Assess the normality assumption for the data? Use the Kruskal-Wallis Test to evaluate whether there are statistically significant differences in Horsepower across the groups (4-cylinder, 6-cylinder, 8-cylinder). Present the test results using a boxplot and appropriately annotate the p-value in your visualization.
+
+## State the Null and Research Hypotheses
+
+### Alternative Hypothesis (H1):is HO: θL = θM = θH (All groups have the same median).
+
+### The research hypothesis is HA: There is a tendency for self-conidence to rank systematically higher or lower for at least one level of social interaction when compared with the other levels. (at least one group differs in its median).
+
+### Set the Level of Risk (or the Level of Signiicance) Associated with the Null Hypothesis α = 0.05, 95% chance that any observed statistical difference will be real and not due to chance
+
+### Load necessary packages
+
+```{r}
+library(pacman)
+p_load(rmarkdown,officer,knitr,kableExtra,latex2exp,xtable,flextable,tidyverse, rstatix, ggsignif)
+```
+
+### Convert knit format
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,    
+  warning = FALSE, 
+  message = FALSE, 
+  fig.width = 6,   
+  fig.height = 4   
+)
+```
+
+### check my data type
+
+```{r}
+mtcars <- as.tibble(mtcars)
+glimpse(mtcars)
+```
+
+### show my data
+
+```{r}
+mtcars <- as.tibble(mtcars)
+kable(mtcars, caption = "mtcars Dataset")
+```
+
+### Convert to long format(tidy) for analysis and data manipulation
+
+```{r}
+data_long <- mtcars  |> 
+  select(hp, cyl)  |> 
+  mutate(cyl = as.factor(cyl))  |> 
+  pivot_longer(cols = hp, names_to = "Metric", values_to = "Value") 
+kable(data_long, caption = "data cleaning and wrangling")
+```
+
+### calculate rank and handling Ties for the Test Statistic doing Ties Correction (C_H)
+
+```{r}
+ranked_data <- data_long |> 
+  mutate(Rank = rank(Value), 
+         Tie_Case = duplicated(Value) | duplicated(Value, fromLast = TRUE)) |> 
+  arrange(Rank)  # Rank အလိုက် စဉ်သည်
+
+kable(ranked_data, caption = "sorting,Ranking and Tie")
+
+```
+
+### Total Rank Variability for hp
+
+```{r}
+rank_sums <- ranked_data |> 
+  group_by(cyl) |>   # Ensure cyl exists
+  summarise(
+    n = n(),
+    Rank_Sum = sum(Rank)
+  )
+
+# Print rank sums
+kable(rank_sums, caption = "total Rank")
+
+```
+
+### total number of observation
+
+```{r}
+N <- nrow(ranked_data)
+
+cat("Total number of observation (N):", N, "\n")
+```
+
+### number of category
+
+```{r}
+k <- n_distinct(ranked_data$cyl)
+cat(" Number of category (N):", k, "\n")
+```
+
+## Compute the Kruskal-Wallis H-test statistic using the formula:
+
+$$
+H = \frac{12}{N(N+1)} \sum \frac{R_i^2}{n_i} - 3(N+1)$$
+
+Where: - $N$ is the total number of observations. - $R_i$ is the rank sum for each group. - $n_i$ is the number of observations in each group.
+
+```{r}
+df <- k - 1
+
+H <- 12 / (N * (N + 1)) * sum((rank_sums$Rank_Sum^2) / rank_sums$n) - 3 * (N + 1)
+p_value <- pchisq(H, df, lower.tail = FALSE)
+
+cat("Kruskal-Wallis H statistic:", round(H, 4), "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("p-value:", round(p_value, 6), "\n")
+if (p_value < 0.05) {
+  cat("The result is significant (p < 0.05). At least one group differs.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). Groups are similar.\n")
+}
+```
+
+## Compute ties table based on Tie_Case
+
+```{r}
+ties_table <- ranked_data |> 
+  filter(Tie_Case) |> 
+  count(Rank)
+
+# Print the updated ties table
+kable(ties_table, caption = "Number of Tie")
+
+```
+
+# Compute C_H correction factor
+
+## To Compute the Test Statistic doing Ties Correction (C_H)
+
+The ties correction is applied to adjust for tied ranks. The formula for the ties correction $C_H$ is:
+
+$$
+C_H = 1 - \frac{\sum{(T^3 - Ti)}}{N^3 - N}
+$$
+
+Where: - $T$ is the number of tied ranks in each group of ties. - $N$ is the total number of observations.
+
+```{r}
+# Compute C_H correction factor
+C_H <- 1 - sum((ties_table$n^3 - ties_table$n) / ((nrow(ranked_data)^3) - nrow(ranked_data)))
+
+# Print C_H
+cat("Ties Correction Factor (C_H):", round(C_H, 4), "\n")
+```
+
+Calculate H statistic
+
+```{r}
+H_corrected <- H / C_H 
+cat("Corrected H Statistic:", round(H_corrected, 4), "\n")
+```
+
+# **Pairwise Wilcoxon Rank Sum Test with Bonferroni Correction**
+
+```{r}
+pairwise_results <- ranked_data |> 
+  pairwise_wilcox_test(Value ~ cyl, p.adjust.method = "bonferroni") |> 
+  mutate(p = round(p, 6), p.adj = round(p.adj, 3))
+
+kable(pairwise_results, caption = "pairwise results")
+
+```
+
+# Visualizing pairwise comparisons with exact p-values with heatmap
+
+```{r}
+filtered_results <- pairwise_results |> 
+  filter((group1 == "4" & group2 == "6") | 
+         (group1 == "4" & group2 == "8") | 
+         (group1 == "6" & group2 == "8"))
+ggplot(filtered_results, aes(x = group1, y = group2, fill = p.adj)) +
+  geom_tile(color = "white") +  # Heatmap style
+  geom_text(aes(label = round(p.adj, 3)), color = "black", size = 5) +  # Adjusted p-values (3 digits)
+  scale_fill_gradient(low = "blue", high = "red") +  # Color scale for p-values
+  theme_minimal() +
+  labs(title = "Pairwise Comparisons (Adjusted p-values)", 
+       x = "Group 1 (cyl)", 
+       y = "Group 2 (cyl)", 
+       fill = "Adjusted p-value") +
+  theme_minimal() 
+```
+
+visturalization boxplot
+
+```{r}
+rank_plot <- ggplot(data_long , aes(x = cyl, y = Value, fill = cyl)) +
+  geom_boxplot(outlier.color = "red", outlier.shape = 8, alpha = 0.7) +  # Transparent boxplot
+  geom_jitter(aes(color = cyl), width = 0.2, size = 2, alpha = 0.7) +  # Jitter points
+  labs(
+    title = "Rank Distribution of HP by Cylinders",
+    x = "Number of Cylinders",
+    y = "Value of hp"
+  ) +
+  theme_minimal() +
+  geom_signif(
+    comparisons = list(
+      c("4", "6"),
+      c("4", "8"),
+      c("6", "8")
+    ),
+    map_signif_level = TRUE,
+    test = "wilcox.test",
+    step_increase = 0.1
+  ) +
+  scale_color_manual(values = c("4" = "blue", "6" = "green", "8" = "purple")) +  # Custom colors
+  theme(legend.position = "none")  # Hide legend
+
+print(rank_plot)
+```
+
+# Perform Kruskal-Wallis Test
+
+```{r}
+rstatix_in_kruskal_result <- data_long |> 
+  kruskal_test(Value ~ cyl)
+kable(rstatix_in_kruskal_result, caption = "Rstatix in kruskal result")
+```
+
+# Perform pairwise Wilcoxon comparisons with Bonferroni correction
+
+```{r}
+rstatix_in_pairwise_results <- data_long |> 
+  pairwise_wilcox_test(Value ~ cyl, p.adjust.method = "bonferroni") |> 
+  mutate(p = round(p, 6), p.adj = round(p.adj, 3))
+kable(rstatix_in_pairwise_results, caption = "rstatix_in_pairwise_results")
+```

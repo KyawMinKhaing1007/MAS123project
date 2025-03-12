@@ -1,0 +1,43 @@
+---
+title: "Population Estimation using Demographic Balancing Equation"
+author: "Kyaw Min Khaing"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(kableExtra) # For better table formatting
+```
+
+Step 4: Create a Tibble Table
+
+```{r cars}
+# Create a tibble with the computed values
+population_data <- tibble(
+  Year = c("2005", "2010"),
+  Population = c(45486000, 45510226),
+  Births = c(34570, NA),
+  Deaths = c(13674, NA),
+  In_Migrants = c(5675, NA),
+  Out_Migrants = c(2345, NA),
+  Natural_Increase = c(20896, NA),
+  Net_Migration = c(3330, NA),
+  Net_Population_Increase = c(20896 + 3330, NA)
+)
+
+# Display the tibble
+population_data %>%
+  kbl() %>%
+  kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"))
+```
+
+## **Conclusion**
+
+-   The **natural increase** was **20,896**.
+
+-   The **net migration** was **3,330**.
+
+-   The **net population increase** was **24,226**.
+
+-   The **estimated population for 2010** was **45,510,226**.

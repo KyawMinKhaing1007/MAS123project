@@ -1,0 +1,115 @@
+---
+title: "net migration"
+author: "Kyaw Min Khaing"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+# Create the initial tibble
+
+```{r}
+migration_data <- tibble(
+  Region = c("Mandalay", "Bago", "Ayeyarwaddy", "Tanitharyi", "Myanmar"),
+  Pop_2004 = c(7571, 5514, 7455, 1525, 54299),
+  Pop_2008 = c(8216, 5879, 7858, 1665, 58377)
+)
+print(migration_data)
+```
+
+# Calculate the net migration rate
+
+# Net Migration Rate Formula
+
+The net migration rate $m$ for a region is calculated using the National Growth Rate method as follows:
+
+$$
+m = \left[ \frac{(P_{\text{t+n}} - P_t)}{P_t} - \frac{(P_{\text{T+n}} - P_T)}{P_T} \right] \times k
+$$
+
+Where: - $P_{\text{ret}}$ is the population at the end of the period. - $P_f$ is the population at the beginning of the period. - $P_i$ is the initial population of the region. - $P_T$ is the total population of the country. - $k$ is a constant (usually 100 for percentage).
+
+## Mandalay
+
+$$
+m = \left[ \frac{(8216 - 7571)}{7571} - \frac{(58377 - 54299)}{54299} \right] \times 100 = 1.01\%
+$$
+
+## Bago
+
+$$
+m = \left[ \frac{(5879 - 5514)}{5514} - \frac{(58377 - 54299)}{54299} \right] \times 100 = -0.89\%
+$$
+
+## Ayeyarwaddy
+
+$$
+m = \left[ \frac{(7858 - 7455)}{7455} - \frac{(58377 - 54299)}{54299} \right] \times 100 = -2.1\%
+$$
+
+## Tanitharyi
+
+$$
+m = \left[ \frac{(1665 - 1525)}{1525} - \frac{(58377 - 54299)}{54299} \right] \times 100 = 1.68\%
+$$
+
+# Interpretation
+
+According to the National Growth Rate method, during 2004 to 2008, there were net immigration in Mandalay Region and Tanitharyi Region. There were net out-migration in Ayeyarwaddy Region and Bago Region.
+
+The occurrence of net in-migration is due to the better employment opportunities, better economic possibilities, facilities for education, housing, medical treatment, and higher standard of living in those areas.
+
+```{r}
+national_growth <- migration_data %>%
+  filter(Region == "Myanmar") %>%
+  mutate(
+    Growth_Rate_National = (Pop_2008 - Pop_2004) / Pop_2004
+  ) %>%
+  pull(Growth_Rate_National) # နိုင်ငံတော် Growth Rate ကို သီးသန့်ထုတ်
+print(national_growth)
+```
+
+```         
+ 3. Calculate Regional Migration Rate
+```
+
+```{r}
+result <- migration_data %>%
+  filter(Region != "Myanmar") %>% # နိုင်ငံတော်ဒေတာဖယ်ရန်
+  mutate(
+    Growth_Rate_Regional = (Pop_2008 - Pop_2004) / Pop_2004,
+    Net_Migration_Rate = (Growth_Rate_Regional - national_growth) * 100
+  )
+print(result)
+```
+
+```         
+# 4. Show Results
+```
+
+```{r}
+result %>%
+  select(Region, Net_Migration_Rate) %>%
+  knitr::kable(digits = 2, caption = "Net Migration Rate (2004-2008)")
+
+```
+
+# Visualization using ggplot2
+
+```{r}
+ggplot(result, aes(x = reorder(Region, -Net_Migration_Rate), y = Net_Migration_Rate, fill = Region)) +
+  geom_col() +
+  geom_text(aes(label = sprintf("%.2f%%", Net_Migration_Rate)), vjust = -0.5) +
+  labs(
+    title = "Net Migration Rate by Region (2004-2008)",
+    x = "Region",
+    y = "Net Migration Rate (%)",
+    caption = "Positive: In-migration | Negative: Out-migration"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```

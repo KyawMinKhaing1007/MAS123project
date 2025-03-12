@@ -1,0 +1,94 @@
+---
+title: "Demographic Analysis of Mauritius (1989)"
+author: "Kyaw Min Khaing"
+date: "2025-02-05"
+output: word_document
+---
+## **Introduction**
+This analysis examines the population dynamics of Mauritius in **1989**, focusing on:  
+1. **Natural Increase (NI)**  
+2. **Crude Rate of Natural Increase (CRNI)**  
+3. **Vital Index (VI)**  
+---
+## **Formulae for Calculations**
+1. **Natural Increase (NI):**
+   $$
+   NI = B - D
+   $$
+
+2. **Crude Rate of Natural Increase (CRNI):**
+   $$
+   CRNI = \frac{(B - D)}{P} \times 1000
+   $$
+
+3. **Vital Index (VI):**
+   $$
+   VI = \frac{B}{D} \times 100
+   $$
+
+where:  
+- \( B = 20,875 \) (Total Births)  
+- \( D = 6,946 \) (Total Deaths)  
+- \( P = 1,064,000 \) (Mid-Year Population)  
+
+---
+
+## **Data Representation**
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+# Given Data
+
+```{r}
+mauritius_data <- tibble(
+  Year = 1989,
+  Births = 20875,
+  Deaths = 6946,
+  Population = 1064000,
+  Natural_Increase = 20875 - 6946, # NI Calculation
+  CRNI = ((20875 - 6946) / 1064000) * 1000, # CRNI Calculation
+  Vital_Index = (20875 / 6946) * 100 # VI Calculation
+)
+
+# Display the tibble table
+mauritius_data
+
+```
+
+Visualization: Births, Deaths, and Natural Increase
+
+```{r pressure, echo=FALSE}
+ggplot(mauritius_data, aes(x = Year)) +
+  geom_col(aes(y = Births), fill = "blue", alpha = 0.6) +
+  geom_col(aes(y = Deaths), fill = "red", alpha = 0.6) +
+  geom_text(aes(y = Births, label = Births), vjust = -0.5, size = 5) +
+  geom_text(aes(y = Deaths, label = Deaths), vjust = 1.5, size = 5, color = "white") +
+  labs(title = "Births vs. Deaths in Mauritius (1989)",
+       x = "Year",
+       y = "Number of People",
+       fill = "Legend") +
+  theme_minimal()
+```
+Visualization: Crude Rate of Natural Increase
+```{r}
+ggplot(mauritius_data, aes(x = "", y = CRNI, fill = "CRNI per 1000")) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar("y", start = 0) +
+  labs(title = "Crude Rate of Natural Increase (1989)",
+       subtitle = "Mauritius",
+       fill = "Rate per 1000") +
+  theme_minimal()
+```
+Visualization: Vital Index
+```{r}
+ggplot(mauritius_data, aes(x = "", y = Vital_Index, fill = "Vital Index")) +
+  geom_bar(stat = "identity", width = 0.5) +
+  coord_polar("y", start = 0) +
+  labs(title = "Vital Index of Mauritius (1989)",
+       subtitle = "Births per 100 Deaths",
+       fill = "Index") +
+  theme_minimal()
+```
+

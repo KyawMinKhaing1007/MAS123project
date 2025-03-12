@@ -1,0 +1,714 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Individual Assignment II},
+  pdfauthor={Group(1) Kyaw Min Khaing},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Individual Assignment II}
+\author{Group(1) Kyaw Min Khaing}
+\date{}
+
+\begin{document}
+\maketitle
+
+\subsubsection{Load necessary packages}\label{load-necessary-packages}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(pacman)}
+\FunctionTok{p\_load}\NormalTok{(tidyverse,rstatix,randtests,ggpubr)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{No-1(a) A physician who specializes in genetic diseases
+develops a theory which predicts that two-thirds of the people who
+develop a disease called cyclomeiosis will be males. She randomly
+selects 300 people who are afflicted with cyclomeiosis and observes that
+140 of them are females. Is the physician's theory supported? Above the
+median (Males30 Females60) Below the median (Males70
+Females60)}\label{no-1a-a-physician-who-specializes-in-genetic-diseases-develops-a-theory-which-predicts-that-two-thirds-of-the-people-who-develop-a-disease-called-cyclomeiosis-will-be-males.-she-randomly-selects-300-people-who-are-afflicted-with-cyclomeiosis-and-observes-that-140-of-them-are-females.-is-the-physicians-theory-supported-above-the-median-males30-females60-below-the-median-males70-females60}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{observed }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{160}\NormalTok{, }\DecValTok{140}\NormalTok{)  }\CommentTok{\# Males, Females}
+\NormalTok{total }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(observed)  }\CommentTok{\# Total sample size}
+\CommentTok{\# Expected counts based on the physician\textquotesingle{}s theory}
+\NormalTok{expected }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\SpecialCharTok{/}\DecValTok{3} \SpecialCharTok{*}\NormalTok{ total, }\DecValTok{1}\SpecialCharTok{/}\DecValTok{3} \SpecialCharTok{*}\NormalTok{ total)}
+\CommentTok{\# Combine into a data frame}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Gender =} \FunctionTok{c}\NormalTok{(}\StringTok{"Males"}\NormalTok{, }\StringTok{"Females"}\NormalTok{),}
+  \AttributeTok{Observed =}\NormalTok{ observed,}
+  \AttributeTok{Expected =}\NormalTok{ expected}
+\NormalTok{)}
+\CommentTok{\# Display the data}
+\NormalTok{data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 2 x 3
+##   Gender  Observed Expected
+##   <chr>      <dbl>    <dbl>
+## 1 Males        160      200
+## 2 Females      140      100
+\end{verbatim}
+
+Performing the Chi-Square Test
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform the Chi{-}Square Goodness{-}of{-}Fit Test}
+\NormalTok{chisq\_test }\OtherTok{\textless{}{-}} \FunctionTok{chisq.test}\NormalTok{(}\AttributeTok{x =}\NormalTok{ observed, }\AttributeTok{p =} \FunctionTok{c}\NormalTok{(}\DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\DecValTok{1}\SpecialCharTok{/}\DecValTok{3}\NormalTok{))}
+\CommentTok{\# Display the results}
+\NormalTok{chisq\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Chi-squared test for given probabilities
+## 
+## data:  observed
+## X-squared = 24, df = 1, p-value = 9.634e-07
+\end{verbatim}
+
+Visualize observed vs.~expected counts
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(Observed, Expected), }\AttributeTok{names\_to =} \StringTok{"Type"}\NormalTok{, }\AttributeTok{values\_to =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Gender, }\AttributeTok{y =}\NormalTok{ Count, }\AttributeTok{fill =}\NormalTok{ Type)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{, }\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Observed vs. Expected Counts"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Gender"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Count"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Type"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Assigment2_files/figure-latex/2(a)Visualize-1.pdf}
+
+\subsection{No-1(b) A study is conducted to determine whether five-year
+old females are more likely than five-year old males to score above the
+population median on a standardized test of eye-hand coordination. One
+hundred randomly selected females and 100 randomly selected males are ©
+2000 by Chapman \& Hall/CRC administered the test of eye-hand
+coordination, and categorized with respect to whether they score above
+or below the overall population median (i.e., the 50th percentile for
+both males and females). Table 16.11 summarizes the results of the
+study. Do the data indicate that there are gender differences in
+performance? Above the median (Males30 Females60) Below the median
+(Males70
+Females60)}\label{no-1b-a-study-is-conducted-to-determine-whether-five-year-old-females-are-more-likely-than-five-year-old-males-to-score-above-the-population-median-on-a-standardized-test-of-eye-hand-coordination.-one-hundred-randomly-selected-females-and-100-randomly-selected-males-are-2000-by-chapman-hallcrc-administered-the-test-of-eye-hand-coordination-and-categorized-with-respect-to-whether-they-score-above-or-below-the-overall-population-median-i.e.-the-50th-percentile-for-both-males-and-females.-table-16.11-summarizes-the-results-of-the-study.-do-the-data-indicate-that-there-are-gender-differences-in-performance-above-the-median-males30-females60-below-the-median-males70-females60}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create a dataframe for the study}
+\NormalTok{study\_data }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Gender =} \FunctionTok{c}\NormalTok{(}\StringTok{"Males"}\NormalTok{, }\StringTok{"Females"}\NormalTok{),}
+  \AttributeTok{Above\_Median =} \FunctionTok{c}\NormalTok{(}\DecValTok{30}\NormalTok{, }\DecValTok{60}\NormalTok{),}
+  \AttributeTok{Below\_Median =} \FunctionTok{c}\NormalTok{(}\DecValTok{70}\NormalTok{, }\DecValTok{40}\NormalTok{)}
+\NormalTok{)}
+\CommentTok{\# Print the data}
+\FunctionTok{glimpse}\NormalTok{(study\_data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Rows: 2
+## Columns: 3
+## $ Gender       <chr> "Males", "Females"
+## $ Above_Median <dbl> 30, 60
+## $ Below_Median <dbl> 70, 40
+\end{verbatim}
+
+We use a Chi-Square test for independence to determine if there is a
+significant association between gender and test performance.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create a contingency table}
+\NormalTok{contingency\_table }\OtherTok{\textless{}{-}} \FunctionTok{as.table}\NormalTok{(}\FunctionTok{rbind}\NormalTok{(}
+  \FunctionTok{c}\NormalTok{(}\DecValTok{30}\NormalTok{, }\DecValTok{70}\NormalTok{),  }\CommentTok{\# Males}
+  \FunctionTok{c}\NormalTok{(}\DecValTok{60}\NormalTok{, }\DecValTok{40}\NormalTok{)   }\CommentTok{\# Females}
+\NormalTok{))}
+\FunctionTok{rownames}\NormalTok{(contingency\_table) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Males"}\NormalTok{, }\StringTok{"Females"}\NormalTok{)}
+\FunctionTok{colnames}\NormalTok{(contingency\_table) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"Above Median"}\NormalTok{, }\StringTok{"Below Median"}\NormalTok{)}
+\CommentTok{\# Perform the Chi{-}Square test}
+\NormalTok{chisq\_test }\OtherTok{\textless{}{-}} \FunctionTok{chisq.test}\NormalTok{(contingency\_table)}
+\CommentTok{\# Display the results}
+\NormalTok{chisq\_test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's Chi-squared test with Yates' continuity correction
+## 
+## data:  contingency_table
+## X-squared = 16.99, df = 1, p-value = 3.758e-05
+\end{verbatim}
+
+\subsubsection{Report significance}\label{report-significance}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha }\OtherTok{\textless{}{-}} \FloatTok{0.05}  \CommentTok{\# Significance level}
+\ControlFlowTok{if}\NormalTok{ (chisq\_test}\SpecialCharTok{$}\NormalTok{p.value }\SpecialCharTok{\textless{}}\NormalTok{ alpha) \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"The result is significant at α ="}\NormalTok{, alpha, }
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{(p{-}value ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(chisq\_test}\SpecialCharTok{$}\NormalTok{p.value, }\DecValTok{4}\NormalTok{), }\StringTok{")."}\NormalTok{,}
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{There is evidence of a relationship between gender and performance.}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"The result is not significant at α ="}\NormalTok{, alpha, }
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{(p{-}value ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(chisq\_test}\SpecialCharTok{$}\NormalTok{p.value, }\DecValTok{4}\NormalTok{), }\StringTok{")."}\NormalTok{,}
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{There is no evidence of a relationship between gender and performance.}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The result is significant at α = 0.05 
+## (p-value = 0 ). 
+## There is evidence of a relationship between gender and performance.
+\end{verbatim}
+
+\subsubsection{Visualization}\label{visualization}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Transform the data for plotting}
+\NormalTok{plot\_data }\OtherTok{\textless{}{-}}\NormalTok{ study\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{pivot\_longer}\NormalTok{(}\AttributeTok{cols =} \FunctionTok{c}\NormalTok{(Above\_Median, Below\_Median),}
+               \AttributeTok{names\_to =} \StringTok{"Score\_Category"}\NormalTok{,}
+               \AttributeTok{values\_to =} \StringTok{"Count"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Score\_Category =} \FunctionTok{factor}\NormalTok{(Score\_Category, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Above\_Median"}\NormalTok{, }\StringTok{"Below\_Median"}\NormalTok{)))}
+
+\CommentTok{\# Plot}
+\NormalTok{gender\_plot }\OtherTok{\textless{}{-}} \FunctionTok{ggbarplot}\NormalTok{(}
+\NormalTok{  plot\_data, }\AttributeTok{x =} \StringTok{"Gender"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Count"}\NormalTok{, }\AttributeTok{fill =} \StringTok{"Score\_Category"}\NormalTok{,}
+  \AttributeTok{color =} \StringTok{"white"}\NormalTok{, }\AttributeTok{position =} \FunctionTok{position\_dodge}\NormalTok{(),}
+  \AttributeTok{xlab =} \StringTok{"Gender"}\NormalTok{, }\AttributeTok{ylab =} \StringTok{"Count"}\NormalTok{,}
+  \AttributeTok{legend.title =} \StringTok{"Score Category"}\NormalTok{,}
+  \AttributeTok{title =} \StringTok{"Performance by Gender in Eye{-}Hand Coordination Test"}
+\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\NormalTok{gender\_plot}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Assigment2_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\subsection{No-2(a) Doctor Radical, a math instructor at Logarithm
+University, has three classes in advanced calculus. There are five
+students in each class. The instructor uses a programmed textbook in
+Class 1, a conventional textbook in Class 2, and his own printed notes
+in Class 3. At the end of the semester, in order to determine if the
+type of instruction employed influences student performance, Dr.~Radical
+has another math instructor, Dr.~Root, rank the 15 students in the three
+classes with respect to math ability. The rankings of the students in
+the three classes follow: Class 1: 9.5, 14.5, 12.5, 14.5, 12.5; Class 2:
+6, 9.5, 3, 9.5, 3; and Class 3: 1, 9.5, 6, 3, 6 (assume the lower the
+rank, the better the student). At α = 0.05, is there a difference three
+classes in advanced
+calculus.?}\label{no-2a-doctor-radical-a-math-instructor-at-logarithm-university-has-three-classes-in-advanced-calculus.-there-are-five-students-in-each-class.-the-instructor-uses-a-programmed-textbook-in-class-1-a-conventional-textbook-in-class-2-and-his-own-printed-notes-in-class-3.-at-the-end-of-the-semester-in-order-to-determine-if-the-type-of-instruction-employed-influences-student-performance-dr.-radical-has-another-math-instructor-dr.-root-rank-the-15-students-in-the-three-classes-with-respect-to-math-ability.-the-rankings-of-the-students-in-the-three-classes-follow-class-1-9.5-14.5-12.5-14.5-12.5-class-2-6-9.5-3-9.5-3-and-class-3-1-9.5-6-3-6-assume-the-lower-the-rank-the-better-the-student.-at-ux3b1-0.05-is-there-a-difference-three-classes-in-advanced-calculus.}
+
+\subsubsection{To input Dataset}\label{to-input-dataset}
+
+The rankings of the students in the three classes are as follows: Class
+1 (Programmed Textbook): 9.5, 14.5, 12.5, 14.5, 12.5 Class 2
+(Conventional Textbook): 6, 9.5, 3, 9.5, 3 Class 3 (Printed Notes): 1,
+9.5, 6, 3, 6
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Class =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"Class 1"}\NormalTok{, }\StringTok{"Class 2"}\NormalTok{, }\StringTok{"Class 3"}\NormalTok{), }\AttributeTok{each =} \DecValTok{5}\NormalTok{),}
+  \AttributeTok{Rank =} \FunctionTok{c}\NormalTok{(}
+    \FloatTok{9.5}\NormalTok{, }\FloatTok{14.5}\NormalTok{, }\FloatTok{12.5}\NormalTok{, }\FloatTok{14.5}\NormalTok{, }\FloatTok{12.5}\NormalTok{,  }\CommentTok{\# Class 1}
+    \DecValTok{6}\NormalTok{, }\FloatTok{9.5}\NormalTok{, }\DecValTok{3}\NormalTok{, }\FloatTok{9.5}\NormalTok{, }\DecValTok{3}\NormalTok{,             }\CommentTok{\# Class 2}
+    \DecValTok{1}\NormalTok{, }\FloatTok{9.5}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{6}               \CommentTok{\# Class 3}
+\NormalTok{  )}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 15 x 2
+##    Class    Rank
+##    <chr>   <dbl>
+##  1 Class 1   9.5
+##  2 Class 1  14.5
+##  3 Class 1  12.5
+##  4 Class 1  14.5
+##  5 Class 1  12.5
+##  6 Class 2   6  
+##  7 Class 2   9.5
+##  8 Class 2   3  
+##  9 Class 2   9.5
+## 10 Class 2   3  
+## 11 Class 3   1  
+## 12 Class 3   9.5
+## 13 Class 3   6  
+## 14 Class 3   3  
+## 15 Class 3   6
+\end{verbatim}
+
+\subsubsection{Kruskal-Wallis Test}\label{kruskal-wallis-test}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kruskal\_result }\OtherTok{\textless{}{-}}\NormalTok{ data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{kruskal\_test}\NormalTok{(Rank }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Class)}
+\CommentTok{\# Print the result}
+\FunctionTok{print}\NormalTok{(kruskal\_result)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 6
+##   .y.       n statistic    df      p method        
+## * <chr> <int>     <dbl> <int>  <dbl> <chr>         
+## 1 Rank     15      8.75     2 0.0126 Kruskal-Wallis
+\end{verbatim}
+
+\subsubsection{Check for significance}\label{check-for-significance}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{alpha }\OtherTok{\textless{}{-}} \FloatTok{0.05}  \CommentTok{\# Significance level}
+\ControlFlowTok{if}\NormalTok{ (kruskal\_result}\SpecialCharTok{$}\NormalTok{p }\SpecialCharTok{\textless{}}\NormalTok{ alpha) \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"The result is significant at α ="}\NormalTok{, alpha, }
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{(p{-}value ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(kruskal\_result}\SpecialCharTok{$}\NormalTok{p, }\DecValTok{4}\NormalTok{), }\StringTok{")."}\NormalTok{,}
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{There is evidence that at least one group differs significantly.}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+  \FunctionTok{cat}\NormalTok{(}\StringTok{"The result is not significant at α ="}\NormalTok{, alpha, }
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{(p{-}value ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(kruskal\_result}\SpecialCharTok{$}\NormalTok{p, }\DecValTok{4}\NormalTok{), }\StringTok{")."}\NormalTok{,}
+      \StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{There is no evidence that the groups differ significantly.}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The result is significant at α = 0.05 
+## (p-value = 0.0126 ). 
+## There is evidence that at least one group differs significantly.
+\end{verbatim}
+
+\subsubsection{Pairwise Comparisons}\label{pairwise-comparisons}
+
+If the Kruskal-Wallis test is significant, we will perform pairwise
+comparisons using the Dunn test with Bonferroni correction.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{pairwise\_result }\OtherTok{\textless{}{-}}\NormalTok{ data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{dunn\_test}\NormalTok{(Rank }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Class, }\AttributeTok{p.adjust.method =} \StringTok{"bonferroni"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_xy\_position}\NormalTok{(}\AttributeTok{x =} \StringTok{"Class"}\NormalTok{, }\AttributeTok{step.increase =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{label =} \FunctionTok{paste0}\NormalTok{(}\StringTok{"p = "}\NormalTok{, }\FunctionTok{signif}\NormalTok{(p.adj, }\DecValTok{4}\NormalTok{))) }\CommentTok{\# Adds x, y positions for annotation}
+\FunctionTok{print}\NormalTok{(pairwise\_result)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 3 x 14
+##   .y.   group1  group2     n1    n2 statistic       p  p.adj p.adj.signif
+##   <chr> <chr>   <chr>   <int> <int>     <dbl>   <dbl>  <dbl> <chr>       
+## 1 Rank  Class 1 Class 2     5     5    -2.34  0.0193  0.0578 ns          
+## 2 Rank  Class 1 Class 3     5     5    -2.74  0.00621 0.0186 *           
+## 3 Rank  Class 2 Class 3     5     5    -0.396 0.692   1      ns          
+## # i 5 more variables: y.position <dbl>, groups <named list>, xmin <dbl>,
+## #   xmax <dbl>, label <chr>
+\end{verbatim}
+
+\subsubsection{Visualization}\label{visualization-1}
+
+We will create a boxplot to visualize the rank distributions across the
+three classes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Class, }\AttributeTok{y =}\NormalTok{ Rank, }\AttributeTok{fill =}\NormalTok{ Class)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{outlier.color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{outlier.shape =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Boxplot}
+  \FunctionTok{stat\_summary}\NormalTok{(}\AttributeTok{fun =} \StringTok{"mean"}\NormalTok{, }\AttributeTok{geom =} \StringTok{"point"}\NormalTok{, }\AttributeTok{shape =} \DecValTok{4}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{, }\AttributeTok{color =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+} \CommentTok{\# Mean point}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Rank Distribution by Class"}\NormalTok{,}
+    \AttributeTok{subtitle =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Kruskal{-}Wallis p ="}\NormalTok{, }\FunctionTok{round}\NormalTok{(kruskal\_result}\SpecialCharTok{$}\NormalTok{p, }\DecValTok{4}\NormalTok{)),}
+    \AttributeTok{x =} \StringTok{"Class"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Rank"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Assigment2_files/figure-latex/2(a)Visualization-1.pdf}
+
+\subsection{No-2(b) A quality control study is conducted on a machine
+that pours milk into containers. The amount of milk (in liters)
+dispensed by the machine into 21 consecutive containers follows: 1.90,
+1.99, 2.00, 1.78, 1.77, 1.76, 1.98, 1.90, 1.65, 1.76, 2.01, 1.78, 1.99,
+1,76, 1.94, 1.78, 1.67, 1.87, 1.91, 1.91, 1.89. Are the successive
+increments and decrements in the amount of milk dispensed
+random?}\label{no-2b-a-quality-control-study-is-conducted-on-a-machine-that-pours-milk-into-containers.-the-amount-of-milk-in-liters-dispensed-by-the-machine-into-21-consecutive-containers-follows-1.90-1.99-2.00-1.78-1.77-1.76-1.98-1.90-1.65-1.76-2.01-1.78-1.99-176-1.94-1.78-1.67-1.87-1.91-1.91-1.89.-are-the-successive-increments-and-decrements-in-the-amount-of-milk-dispensed-random}
+
+\subsubsection{Introduction}\label{introduction}
+
+In this study, we aim to determine whether the successive increments and
+decrements in the amount of milk dispensed by a machine are random. The
+dataset contains the amount of milk (in liters) dispensed into 21
+consecutive containers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Container =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{21}\NormalTok{,}
+  \AttributeTok{Milk\_Amount =} \FunctionTok{c}\NormalTok{(}\FloatTok{1.90}\NormalTok{, }\FloatTok{1.99}\NormalTok{, }\FloatTok{2.00}\NormalTok{, }\FloatTok{1.78}\NormalTok{, }\FloatTok{1.77}\NormalTok{, }\FloatTok{1.76}\NormalTok{, }\FloatTok{1.98}\NormalTok{, }\FloatTok{1.90}\NormalTok{, }\FloatTok{1.65}\NormalTok{, }\FloatTok{1.76}\NormalTok{,}
+                  \FloatTok{2.01}\NormalTok{, }\FloatTok{1.78}\NormalTok{, }\FloatTok{1.99}\NormalTok{, }\FloatTok{1.76}\NormalTok{, }\FloatTok{1.94}\NormalTok{, }\FloatTok{1.78}\NormalTok{, }\FloatTok{1.67}\NormalTok{, }\FloatTok{1.87}\NormalTok{, }\FloatTok{1.91}\NormalTok{, }\FloatTok{1.91}\NormalTok{, }\FloatTok{1.89}\NormalTok{)}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(data)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 21 x 2
+##    Container Milk_Amount
+##        <int>       <dbl>
+##  1         1        1.9 
+##  2         2        1.99
+##  3         3        2   
+##  4         4        1.78
+##  5         5        1.77
+##  6         6        1.76
+##  7         7        1.98
+##  8         8        1.9 
+##  9         9        1.65
+## 10        10        1.76
+## # i 11 more rows
+\end{verbatim}
+
+\subsubsection{Runs Test for Randomness}\label{runs-test-for-randomness}
+
+To test the randomness of successive increments and decrements in the
+amount of milk dispensed, we first create a binary sequence that
+represents whether each successive value increases or decreases compared
+to the previous value.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}}\NormalTok{ data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Change =} \FunctionTok{ifelse}\NormalTok{(Milk\_Amount }\SpecialCharTok{\textgreater{}} \FunctionTok{lag}\NormalTok{(Milk\_Amount), }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{()}
+\CommentTok{\# Perform Runs Test}
+\NormalTok{runs\_test\_result }\OtherTok{\textless{}{-}} \FunctionTok{runs.test}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{Change)}
+\CommentTok{\# Display the result}
+\NormalTok{runs\_test\_result}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Runs Test
+## 
+## data:  data$Change
+## statistic = NaN, runs = 1, n1 = 9, n2 = 0, n = 9, p-value = NA
+## alternative hypothesis: nonrandomness
+\end{verbatim}
+
+\subsubsection{Visualization}\label{visualization-2}
+
+We can visualize the changes in the amount of milk dispensed to better
+understand the pattern of increments and decrements.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Container, }\AttributeTok{y =}\NormalTok{ Milk\_Amount)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{size =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =} \FunctionTok{factor}\NormalTok{(Change)), }\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}
+    \AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"red"}\NormalTok{, }\StringTok{"1"} \OtherTok{=} \StringTok{"green"}\NormalTok{),}
+    \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Decrease"}\NormalTok{, }\StringTok{"Increase"}\NormalTok{),}
+    \AttributeTok{name =} \StringTok{"Change"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Milk Dispensed by Container"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Container Number"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Milk Amount (liters)"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+## i Please use `linewidth` instead.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+\end{verbatim}
+
+\includegraphics{Assigment2_files/figure-latex/2(b)visualization-1.pdf}
+
+\subsection{No-3(a)A pediatrician speculates that the length of time an
+infant is breast fed may be related to how often a child becomes ill.~In
+order to answer the question, the pediatrician obtains the following two
+scores for five three-year-old children: The number of months the child
+was breast fed (which represents the X variable) and the number of times
+the child was brought to the pediatrician's office during the current
+year (which represents the Y variable). The scores for the five children
+follow: Child 1 (20, 7); Child 2 (0, 0); Child 3 (1, 2); Child 4 (12,
+5); Child 5 (3, 3). Do the data indicate that the length of time a child
+is breast fed is related to the number of times a child is brought to
+the
+pediatrician?}\label{no-3aa-pediatrician-speculates-that-the-length-of-time-an-infant-is-breast-fed-may-be-related-to-how-often-a-child-becomes-ill.-in-order-to-answer-the-question-the-pediatrician-obtains-the-following-two-scores-for-five-three-year-old-children-the-number-of-months-the-child-was-breast-fed-which-represents-the-x-variable-and-the-number-of-times-the-child-was-brought-to-the-pediatricians-office-during-the-current-year-which-represents-the-y-variable.-the-scores-for-the-five-children-follow-child-1-20-7-child-2-0-0-child-3-1-2-child-4-12-5-child-5-3-3.-do-the-data-indicate-that-the-length-of-time-a-child-is-breast-fed-is-related-to-the-number-of-times-a-child-is-brought-to-the-pediatrician}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Child =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{,}
+  \AttributeTok{Months\_Breastfed =} \FunctionTok{c}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{12}\NormalTok{, }\DecValTok{3}\NormalTok{), }\CommentTok{\# X variable}
+  \AttributeTok{Pediatrician\_Visits =} \FunctionTok{c}\NormalTok{(}\DecValTok{7}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{3}\NormalTok{)  }\CommentTok{\# Y variable}
+\NormalTok{)}
+\CommentTok{\# Print the dataset}
+\NormalTok{data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 3
+##   Child Months_Breastfed Pediatrician_Visits
+##   <int>            <dbl>               <dbl>
+## 1     1               20                   7
+## 2     2                0                   0
+## 3     3                1                   2
+## 4     4               12                   5
+## 5     5                3                   3
+\end{verbatim}
+
+We calculate the Pearson correlation coefficient to determine the
+relationship between the variables.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{correlation }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(data}\SpecialCharTok{$}\NormalTok{Months\_Breastfed, data}\SpecialCharTok{$}\NormalTok{Pediatrician\_Visits)}
+\CommentTok{\# Display the correlation result}
+\FunctionTok{cat}\NormalTok{(}\StringTok{"The Pearson correlation coefficient is:"}\NormalTok{, }\FunctionTok{round}\NormalTok{(correlation, }\DecValTok{3}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## The Pearson correlation coefficient is: 0.955
+\end{verbatim}
+
+To visualize the relationship, we create a scatter plot with a
+regression line.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create scatter plot}
+\FunctionTok{ggplot}\NormalTok{(data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Months\_Breastfed, }\AttributeTok{y =}\NormalTok{ Pediatrician\_Visits)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \DecValTok{4}\NormalTok{, }\AttributeTok{color =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_smooth}\NormalTok{(}\AttributeTok{method =} \StringTok{"lm"}\NormalTok{, }\AttributeTok{se =} \ConstantTok{FALSE}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Breastfeeding Duration vs Pediatrician Visits"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Months Breastfed"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Pediatrician Visits"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `geom_smooth()` using formula = 'y ~ x'
+\end{verbatim}
+
+\includegraphics{Assigment2_files/figure-latex/3(a)scatterplot-1.pdf}
+
+\subsection{No-3(b) A study is conducted to determine whether there is a
+correlation between handedness and eye-hand coordination. Five
+right-handed and five left-handed subjects are administered a test of
+eye-hand coordination. The test scores of the subjects follow (the
+higher a subject's score, the better his or her eye-hand coordination):
+Right-handers: 11, 1, 0, 2, 0; Left-handers: 11, 11, 5, 8, 4. Is there a
+statistical relationship between handedness and eye hand
+coordination?}\label{no-3b-a-study-is-conducted-to-determine-whether-there-is-a-correlation-between-handedness-and-eye-hand-coordination.-five-right-handed-and-five-left-handed-subjects-are-administered-a-test-of-eye-hand-coordination.-the-test-scores-of-the-subjects-follow-the-higher-a-subjects-score-the-better-his-or-her-eye-hand-coordination-right-handers-11-1-0-2-0-left-handers-11-11-5-8-4.-is-there-a-statistical-relationship-between-handedness-and-eye-hand-coordination}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{Handedness =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{"Right{-}handed"}\NormalTok{, }\DecValTok{5}\NormalTok{), }\FunctionTok{rep}\NormalTok{(}\StringTok{"Left{-}handed"}\NormalTok{, }\DecValTok{5}\NormalTok{)),}
+  \AttributeTok{Score =} \FunctionTok{c}\NormalTok{(}\DecValTok{11}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{11}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{, }\DecValTok{4}\NormalTok{)}
+\NormalTok{)}
+\CommentTok{\# Print the dataset}
+\NormalTok{data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 10 x 2
+##    Handedness   Score
+##    <chr>        <dbl>
+##  1 Right-handed    11
+##  2 Right-handed     1
+##  3 Right-handed     0
+##  4 Right-handed     2
+##  5 Right-handed     0
+##  6 Left-handed     11
+##  7 Left-handed     11
+##  8 Left-handed      5
+##  9 Left-handed      8
+## 10 Left-handed      4
+\end{verbatim}
+
+A boxplot is used to compare eye-hand coordination scores between
+right-handed and left-handed subjects.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Handedness, }\AttributeTok{y =}\NormalTok{ Score, }\AttributeTok{fill =}\NormalTok{ Handedness)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{(}\AttributeTok{outlier.color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{outlier.shape =} \DecValTok{8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_jitter}\NormalTok{(}\AttributeTok{width =} \FloatTok{0.2}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.7}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Eye{-}Hand Coordination by Handedness"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Handedness"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Eye{-}Hand Coordination Score"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Assigment2_files/figure-latex/3(b)Visualizing the Data-1.pdf}
+Null Hypothesis (H₀): There is no difference in eye-hand coordination
+scores between right-handed and left-handed individuals. Alternative
+Hypothesis(H₁): There is a difference in eye-hand coordination scores
+between the groups.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform the Wilcoxon Rank{-}Sum Test}
+\NormalTok{test\_result }\OtherTok{\textless{}{-}} \FunctionTok{wilcox.test}\NormalTok{(}
+\NormalTok{  Score }\SpecialCharTok{\textasciitilde{}}\NormalTok{ Handedness,}
+  \AttributeTok{data =}\NormalTok{ data,}
+  \AttributeTok{exact =} \ConstantTok{FALSE}
+\NormalTok{)}
+\FunctionTok{print}\NormalTok{(test\_result)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  Score by Handedness
+## W = 21, p-value = 0.08969
+## alternative hypothesis: true location shift is not equal to 0
+\end{verbatim}
+
+\end{document}

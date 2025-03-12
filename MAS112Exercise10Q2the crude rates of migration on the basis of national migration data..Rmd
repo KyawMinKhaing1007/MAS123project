@@ -1,0 +1,79 @@
+---
+title: "the crude rates of migration on the basis of national migration data."
+author: "Kyaw Min Khaing"
+date: "2025-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+```
+
+# 1. Data Preparation
+
+```{r}
+migration_data <- tibble(
+  Country = c("China", "Rep. of Korea", "Philippines"),
+  Year = rep(1997, 3),
+  Population = c(1220224, 44909, 58242),
+  Immigration = c(283, 1237, 67),
+  Emigration = c(236, 1232, 65)
+)
+print(migration_data)
+```
+
+# 2. Calculate Migration Rates
+
+
+
+```{r}
+result <- migration_data %>%
+  mutate(
+    CMR = round((Immigration / Emigration) * 1000, 0),          # Crude Migration Rate
+    CIMR = round((Immigration / Population) * 100000, 0),       # Crude In-Migration Rate
+    COMR = round((Emigration / Population) * 100000, 0),        # Crude Out-Migration Rate
+    CNMR = round(((Immigration - Emigration) / Population) * 100000, 0), # Crude Net Migration Rate
+    CGMR = round(((Immigration + Emigration) / Population) * 100000, 0)  # Crude Gross Migration Rate
+  )
+print(result)
+```
+
+# 3. Show Results
+```{r}
+result %>%
+  select(Country, CMR, CIMR, COMR, CNMR, CGMR) %>%
+  knitr::kable(caption = "Crude Migration Rates (1997)")
+print(result)
+```
+# 4. Visualization with ggplot2 (Faceted Plot)
+```{r}
+result_long <- result %>%
+  pivot_longer(
+    cols = c(CMR, CIMR, COMR, CNMR, CGMR),
+    names_to = "Rate_Type",
+    values_to = "Value"
+  )
+print(result_long)
+```
+Visualization
+```{r}
+ggplot(result_long, aes(x = Country, y = Value, fill = Country)) +
+  geom_col() +
+  facet_wrap(~Rate_Type, scales = "free_y", labeller = labeller(Rate_Type = c(
+    CMR = "CMR (per 1,000 out-migrants)",
+    CIMR = "CIMR (per 100,000 pop)",
+    COMR = "COMR (per 100,000 pop)",
+    CNMR = "CNMR (per 100,000 pop)",
+    CGMR = "CGMR (per 100,000 pop)"
+  ))) +
+  labs(
+    title = "Crude Migration Rates by Country (1997)",
+    y = "Rate Value",
+    x = "Country"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+

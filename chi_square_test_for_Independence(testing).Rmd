@@ -1,0 +1,80 @@
+---
+title: "Chi-Square Test for Independence"
+author: "Kyaw Min Khaing"
+date: "2025-02-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse,knitr)
+```
+
+## **1. State the Hypotheses**
+### **Null Hypothesis (H₀)**:  
+There is no association between variables A and B (they are independent).  
+
+### **Alternative Hypothesis (H₁)**:  
+There is a significant association between variables A and B (they are dependent).  
+
+## **2. Create and Load the Dataset**
+```{r}
+# Create observed frequency table
+dataset <- tibble(
+  B = rep(c("B1", "B2"), each = 2),
+  A = rep(c("A1", "A2"), times = 2),
+  Observed = c(15, 25, 20, 30)
+)
+# Print observed dataset
+  kable(dataset, caption = "observed frequency")
+```
+## **3. Compute Expected Frequencies**
+
+```{r cars}
+# Compute row and column totals
+total_count <- sum(dataset$Observed)
+row_totals <- dataset %>% group_by(B) %>% summarise(Row_Sum = sum(Observed))
+col_totals <- dataset %>% group_by(A) %>% summarise(Col_Sum = sum(Observed))
+
+# Merge row and column totals with dataset
+expected_data <- dataset %>%
+  left_join(row_totals, by = "B") %>%
+  left_join(col_totals, by = "A") %>%
+  mutate(Expected = (Row_Sum * Col_Sum) / total_count)
+
+# Print expected dataset
+kable(expected_data, caption = "expected frequency")
+```
+## **4. Compute Chi-Square Test Statistic**
+
+```{r pressure, echo=FALSE}
+# Compute Chi-Square statistic manually
+expected_data <- expected_data %>%
+  mutate(Chi_Square_Components = (Observed - Expected)^2 / Expected)
+kable(expected_data, caption = "Chi_Square_Components")
+```
+
+```{r}
+chi_sq_stat <- sum(expected_data$Chi_Square_Components)
+# Degrees of freedom
+df <- (length(unique(dataset$B)) - 1) * (length(unique(dataset$A)) - 1)
+
+# Compute p-value
+p_value <- pchisq(chi_sq_stat, df, lower.tail = FALSE)
+
+# Print results
+cat("Chi-Square Statistic:", round(chi_sq_stat, 4), "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("p-value:", round(p_value, 4), "\n")
+```
+## **5. Interpretation**
+```{r}
+if (p_value < 0.05) {
+  cat("Since p-value is less than 0.05, we reject the null hypothesis.\n")
+  cat("There is a significant association between A and B.\n")
+} else {
+  cat("Since p-value is greater than 0.05, we fail to reject the null hypothesis.\n")
+  cat("There is no significant association between A and B.\n")
+}
+```
+
+

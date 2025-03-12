@@ -1,0 +1,23 @@
+
+---
+title: "My R Markdown Report"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: htmMarkdown Preview Enhanced_document
+---
+
+# Introduction
+Markdown Preview En
+
+## Data Summary
+
+```{r}
+library(tidyverse)
+Ctrl + K V
+# Sample Data
+data <- tibble(x = rnorm(100), y = rnorm(100))
+
+# Scatter P
+ggplot(data, aes(x, y)) + geom_point()
+
+Markdown Preview EnhancedMarkdown Preview EnhancedMarkdown Preview EnhancedMarkdown Preview EnhancedMarkdown Preview En

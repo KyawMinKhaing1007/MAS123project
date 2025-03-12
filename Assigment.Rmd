@@ -1,0 +1,151 @@
+---
+title: "Assigment"
+author: "Kyaw Min Khaing"
+date: "2025-02-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(pacman)
+p_load(tidyverse, rstatix, ggplot2, knitr, kableExtra)
+```
+
+
+```{r}
+knitr::opts_chunk$set(
+  echo = TRUE,    
+  warning = FALSE, 
+  message = FALSE, 
+  fig.width = 6,   
+  fig.height = 4   
+)
+```
+
+## Hypothesis Statements
+
+- **Null Hypothesis (H₀)**: The median ranks of math ability are the same across the three instructional methods.
+- **Alternative Hypothesis (H₁)**: At least one instructional method leads to a different median rank in math ability.
+
+```{r}
+data <- tibble(
+  Student = 1:15,
+  Class = rep(c("Class 1", "Class 2", "Class 3"), each = 5),
+  Score = c(85, 90, 88, 92, 89, 78, 83, 75, 80, 76, 72, 79, 77, 74, 78)
+)
+kable(data, caption = "student scores")
+```
+student score
+```{r}
+data_long <- data %>% pivot_longer(cols = Score, names_to = "Variable", values_to = "Value")
+
+ranked_data <- data_long |> 
+  mutate(Rank = rank(Value), 
+         Tie_Case = duplicated(Value) | duplicated(Value, fromLast = TRUE)) |> 
+  arrange(Rank)  # Rank ạảặổẹ ấẼộ ặếặỗ
+
+kable(ranked_data, caption = "Sorting, Ranking and Tie")
+```
+total rank
+```{r}
+rank_sums <- ranked_data %>% 
+  group_by(Class) %>% 
+  summarise(Rank_Sum = sum(Rank), n = n())
+kable(rank_sums, caption = "Total Ranks per Class")
+```
+
+
+```{r}
+N <- nrow(ranked_data)
+
+cat("Total number of observation (N):", N, "\n")
+```
+
+```{r}
+k <- n_distinct(ranked_data$Class)
+cat(" Number of category (N):", k, "\n")
+```
+
+## Compute the Kruskal-Wallis H-test statistic using the formula:
+
+$$
+H = \frac{12}{N(N+1)} \sum \frac{R_i^2}{n_i} - 3(N+1)$$
+
+
+Where: - $N$ is the total number of observations. - $R_i$ is the rank sum for each group. - $n_i$ is the number of observations in each group.
+```{r}
+df <- k - 1
+
+H <- 12 / (N * (N + 1)) * sum((rank_sums$Rank_Sum^2) / rank_sums$n) - 3 * (N + 1)
+p_value <- pchisq(H, df, lower.tail = FALSE)
+
+cat("Kruskal-Wallis H statistic:", round(H, 4), "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("p-value:", round(p_value, 6), "\n")
+if (p_value < 0.05) {
+  cat("The result is significant (p < 0.05). At least one group differs.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). Groups are similar.\n")
+}
+```
+
+```{r}
+ties_table <- ranked_data |> 
+  filter(Tie_Case) |> 
+  count(Rank)
+
+# Print the updated ties table
+kable(ties_table, caption = "Number of Tie")
+```
+# Compute C_H correction factor
+
+## To Compute the Test Statistic doing Ties Correction (C_H)
+
+The ties correction is applied to adjust for tied ranks. The formula for the ties correction $C_H$ is:
+
+$$
+C_H = 1 - \frac{\sum{(T^3 - Ti)}}{N^3 - N}
+$$
+
+Where: - $T$ is the number of tied ranks in each group of ties. - $N$ is the total number of observations.
+
+```{r}
+C_H <- 1 - sum((ties_table$n^3 - ties_table$n) / ((nrow(ranked_data)^3) - nrow(ranked_data)))
+
+# Print C_H
+cat("Ties Correction Factor (C_H):", round(C_H, 4), "\n")
+```
+
+
+```{r}
+H_corrected <- H / C_H 
+cat("Corrected H Statistic:", round(H_corrected, 4), "\n")
+```
+
+```{r}
+pairwise_results <- ranked_data %>% pairwise_wilcox_test(Rank ~ Class, p.adjust.method = "bonferroni")
+kable(pairwise_results, caption = "Pairwise Wilcoxon Rank Sum Test Results")
+```
+
+
+```{r}
+ggplot(ranked_data, aes(x = Class, y = Rank, fill = Class)) +
+  geom_boxplot(outlier.color = "red", alpha = 0.7) +
+  geom_jitter(aes(color = Class), width = 0.2, size = 2, alpha = 0.7) +
+  labs(title = "Math Ability Rank Distribution by Class",
+       x = "Instructional Method",
+       y = "Rank (Lower is Better)") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Class 1" = "blue", "Class 2" = "green", "Class 3" = "purple")) +
+  scale_color_manual(values = c("Class 1" = "blue", "Class 2" = "green", "Class 3" = "purple")) +
+  theme(legend.position = "none")
+```
+## Conclusion
+```{r}
+if (p_value < 0.05) {
+  cat("The result is significant (p < 0.05). At least one group differs in math ability rankings.\n")
+} else {
+  cat("The result is not significant (p >= 0.05). No significant difference in math ability rankings across classes.\n")
+}
+```
+
+

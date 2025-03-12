@@ -1,0 +1,123 @@
+---
+title: "Sample_Biserial_Correlation_(Small_Data_Samples)"
+author: "Kyaw Min Khaing"
+date: "2025-02-02"
+output: html_document
+---
+
+necessary package
+
+```{r}
+library(tidyverse,knitr)
+```
+
+preapare my data
+
+```{r}
+data <- tibble(
+  Participant = 1:16,
+  Exam_Performance = c(rep("F", 5), rep("P", 11)),  
+  GPA = c(3.5, 3.4, 3.3, 3.2, 3.6, 
+          4.0, 3.6, 4.0, 4.0, 3.8, 
+          3.9, 3.9, 4.0, 3.8, 3.5, 3.6)
+) %>% mutate(Exam_Binary = ifelse(Exam_Performance == "P", 1, 0)) 
+
+kable(data, caption = "Exam performance")
+```
+## State the Null and Research Hypothesis 
+HO: ρb = 0
+HA: ρb ≠ 0
+
+## Set the Level of Risk (or the Level of Signiicance) Associated with the Null Hypothesis
+
+The level of risk, also called an alpha (α), is frequently set at 0.05. We will use α = 0.05 in our example. In other words, there is a 95% chance that any observed statistical difference will be real and not due to chance.
+
+```{r}
+alpha <- 0.05
+```
+
+## Compute the Test Statistic 
+
+
+```{r cars}
+# Compute means for each group
+M_1 <- mean(data %>% filter(Exam_Binary == 1) %>% pull(GPA))
+cat("means for pass:", round(M_1, 4), "\n")
+```
+
+```{r}
+M_0 <- mean(data %>% filter(Exam_Binary == 0) %>% pull(GPA))
+cat("means for fail:", round(M_0, 4), "\n")
+
+```
+
+```{r}
+# Compute standard deviation
+s <- sd(data$GPA)
+cat("standard deviation for data:", round(s, 4), "\n")
+```
+
+```{r}
+# Compute proportions
+n_1 <- sum(data$Exam_Binary == 1)
+cat("number for pass:", round(n_1, 4), "\n")
+```
+
+
+```{r}
+n_0 <- sum(data$Exam_Binary == 0)
+cat("number for fail:", round(n_0, 4), "\n")
+```
+
+
+```{r}
+n <- n_1 + n_0
+cat("number for pass and fail:", round(n, 4), "\n")
+```
+
+
+```{r}
+p_1 <- n_1 / n
+cat("proportion of pass:", round(p_1, 4), "\n")
+
+```
+
+
+```{r}
+p_0 <- n_0 / n
+cat("proportion of fail:", round(p_0, 4), "\n")
+```
+Now, determine the height of the unit normal curve ordinate, y, at the point dividing 
+Pp and Pq. We could reference the table of values for the normal distribution, such 
+as Table B.1 in Appendix B, to ind y. However, we will compute the value. Using 
+Table B.1 also provides the z-score at the point dividing Pp and Pq, z = 0.49:
+
+$$
+y = \frac{1}{\sqrt{2\pi}} e^{-z^2/2}
+$$
+
+```{r}
+# Compute r_b
+z <- 0.49
+y <- (1 / sqrt(2 * pi)) * exp(-0.5 * z^2)
+print(y)
+```
+
+
+```{r}
+r_b <- abs(((M_1 - M_0) / s) * (p_1 * p_0) / y)
+print(r_b)
+```
+Determine the Value Needed for Rejection of the Null Hypothesis 
+Using the Appropriate Table of Critical Values for the Particular Statistic Table B.8 in Appendix B lists critical values for the Pearson product-moment 
+correlation coeficient. The table requires the degrees of freedom and df = n − 2. 
+In this study, n = 16 and df = 16 − 2. Therefore, df = 14. Since we are conducting 
+a two-tailed test and α = 0.05, the critical value is 0.497.
+7.5.6.6 Compare the Obtained Value with the Critical Value The critical 
+value for rejecting the null hypothesis is 0.497 and the obtained value is |rb| = 0.972. 
+If the critical value is less than or equal to the obtained value, we must reject the 
+null hypothesis. If instead, the critical value is greater than the obtained value, we 
+must not reject the null hypothesis. Since the critical value is less than the absolute 
+value of the obtained value, we reject the null hypothesis.
+7.5.6.7 Interpret the Results We rejected the null hypothesis, suggesting that 
+there is a signiicant and very strong correlation between student GPA and comprehensive exam performance.

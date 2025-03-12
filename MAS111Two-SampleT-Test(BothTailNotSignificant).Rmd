@@ -1,0 +1,137 @@
+---
+title: "Two-Sample T-Test for Engine Mounting Time"
+author: "Kyaw Min Khaing"
+date: "2025-02-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+Define Hypotheses and Identify the Claim
+We want to determine if there is a significant difference in engine mounting times using the Welles method (W) and the Atkins method (A).
+
+Null Hypothesis (H₀):  (The mean mounting times are equal)
+Alternative Hypothesis (H₁):(The mean mounting times are different)
+This is a two-tailed test at α = 0.10.
+
+```{r cars}
+# Data: Mounting times (in minutes)
+welles <- c(2, 4, 9, 3, 2)
+atkins <- c(3, 7, 5, 8, 4, 3)
+
+# Sample sizes
+n_W <- length(welles)
+n_A <- length(atkins)
+
+# Sample means
+mean_W <- mean(welles)
+mean_A <- mean(atkins)
+
+# Sample standard deviations
+sd_W <- sd(welles)
+sd_A <- sd(atkins)
+
+# Store in a tibble
+sample_stats <- tibble(
+  `Method` = c("Welles", "Atkins"),
+  `Sample Size (n)` = c(n_W, n_A),
+  `Sample Mean` = c(mean_W, mean_A),
+  `Sample Standard Deviation` = c(sd_W, sd_A)
+)
+
+sample_stats
+
+```
+
+Compute Pooled Variance
+
+```{r}
+# Compute pooled variance
+sp2 <- ((n_W - 1) * sd_W^2 + (n_A - 1) * sd_A^2) / (n_W + n_A - 2)
+
+# Store in a tibble
+pooled_variance <- tibble(`Pooled Variance (s²_p)` = round(sp2, 3))
+
+pooled_variance
+
+```
+
+Compute Test Statistic
+```{r}
+# Compute standard error
+se <- sqrt(sp2 * (1/n_W + 1/n_A))
+
+# Compute test statistic
+t_test <- (mean_W - mean_A) / se
+
+# Degrees of freedom
+df <- n_W + n_A - 2
+
+# Critical value for two-tailed t-test
+t_critical <- qt(1 - 0.10 / 2, df)
+
+# Store results in a tibble
+test_statistic <- tibble(
+  `Test Statistic (t)` = round(t_test, 3),
+  `Degrees of Freedom` = df,
+  `Critical Value (±t_critical)` = round(t_critical, 3)
+)
+
+test_statistic
+```
+Make the Decision
+```{r}
+# Decision rule
+decision <- ifelse(abs(t_test) > t_critical, 
+                   "Reject H₀: There is a significant difference in mounting times.", 
+                   "Fail to Reject H₀: There is no significant difference in mounting times.")
+
+# Store decision in a tibble
+decision_table <- tibble(`Decision` = decision)
+
+decision_table
+```
+Visualization: T-Test and Critical Regions
+```{r}
+# Create data for t-distribution
+x_vals <- seq(-4, 4, length.out = 500)
+y_vals <- dt(x_vals, df)
+
+# Plot
+ggplot(data.frame(x = x_vals, y = y_vals), aes(x = x, y = y)) +
+  geom_line(color = "blue", size = 1.5) +  # T-distribution curve
+  
+  # Critical Regions (Shade Red)
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x <= -t_critical),
+            aes(y = y), fill = "darkred", alpha = 0.6) +
+  geom_area(data = subset(data.frame(x = x_vals, y = y_vals), x >= t_critical),
+            aes(y = y), fill = "darkred", alpha = 0.6) +
+  
+  # Test Statistic Line (Dashed Black Line)
+  geom_vline(xintercept = t_test, color = "black", linetype = "dashed", size = 1.5) +  
+  
+  # Critical Value Lines (Dotted Red Lines)
+  geom_vline(xintercept = -t_critical, color = "red", linetype = "dotted", size = 1.5) +  
+  geom_vline(xintercept = t_critical, color = "red", linetype = "dotted", size = 1.5) +  
+  
+  # Labels for Test Statistic
+  annotate("text", x = t_test, y = 0.05, label = paste0("Test Statistic = ", round(t_test, 2)),
+           hjust = -0.1, size = 3, color = "black") +
+  
+  # Labels for Critical Values
+  annotate("text", x = -t_critical, y = 0.05, label = paste0("-T Critical = ", round(-t_critical, 2)),
+           hjust = -0.1, size = 2, color = "red") +
+  annotate("text", x = t_critical, y = 0.05, label = paste0("+T Critical = ", round(t_critical, 2)),
+           hjust = -0.1, size = 2, color = "red") +
+  
+  labs(
+    title = "Two-Sample T-Test: Critical Region and Test Statistic",
+    x = "T-Score",
+    y = "Density"
+  ) +
+  theme_minimal(base_size = 15)
+
+```
+
