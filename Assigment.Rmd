@@ -147,5 +147,3 @@ if (p_value < 0.05) {
   cat("The result is not significant (p >= 0.05). No significant difference in math ability rankings across classes.\n")
 }
 ```
-
-
